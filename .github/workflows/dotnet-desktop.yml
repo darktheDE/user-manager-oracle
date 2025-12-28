@@ -1,0 +1,81 @@
+# GitHub Actions workflow for Oracle User Manager - .NET WinForms Application
+# Build and test on Windows
+
+name: .NET Desktop Build
+
+on:
+  push:
+    branches: ["main", "master", "develop"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    env:
+      SOLUTION_FILE: UserManager.sln
+      PROJECT_FILE: UserManager/UserManager.csproj
+
+    steps:
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: 📋 Display .NET version
+        run: dotnet --version
+
+      - name: 🔧 Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_FILE }}
+
+      - name: 🏗️ Build solution
+        run: dotnet build ${{ env.SOLUTION_FILE }} --configuration ${{ matrix.configuration }} --no-restore
+
+      # Skip tests if no test project exists
+      # - name: 🧪 Run unit tests
+      #   run: dotnet test ${{ env.SOLUTION_FILE }} --configuration ${{ matrix.configuration }} --no-build --verbosity normal
+
+      - name: 📁 Publish application
+        if: matrix.configuration == 'Release'
+        run: |
+          dotnet publish ${{ env.PROJECT_FILE }} --configuration Release --output ./publish --self-contained false
+
+      - name: 📤 Upload build artifact
+        if: matrix.configuration == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: UserManager-${{ github.sha }}
+          path: ./publish/
+          retention-days: 14
+
+  # Code quality check
+  code-quality:
+    name: Code Quality
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: 🔧 Restore dependencies
+        run: dotnet restore UserManager.sln
+
+      - name: 🔍 Run code analysis
+        run: dotnet build UserManager.sln --configuration Release /p:TreatWarningsAsErrors=false

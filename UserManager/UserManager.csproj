@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>UserManager</RootNamespace>
+    <AssemblyName>UserManager</AssemblyName>
+    <Version>1.0.0</Version>
+    <Authors>BTL - Bao Mat CSDL</Authors>
+    <Description>Ứng dụng Quản lý Người dùng Oracle Database</Description>
+  </PropertyGroup>
+
+  <!-- Oracle Database Provider -->
+  <ItemGroup>
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.4.0" />
+  </ItemGroup>
+
+  <!-- Embedded Resources -->
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
