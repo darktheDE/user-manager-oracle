@@ -30,77 +30,93 @@ public partial class UserReportControl : UserControl
 
     private void SetupUI()
     {
-        this.BackColor = AppTheme.CardBackground;
-        this.Padding = new Padding(10);
+        this.BackColor = AppTheme.ContentBackground;
+        this.Padding = new Padding(15);
 
         // Header Panel
         var panelHeader = new Panel
         {
             Dock = DockStyle.Top,
-            Height = 80,
-            BackColor = AppTheme.CardBackground
+            Height = 50,
+            BackColor = AppTheme.ContentBackground
         };
 
-        // Title
         var lblTitle = new Label
         {
-            Text = "📊 BÁO CÁO THÔNG TIN USER ĐẦY ĐỦ",
+            Text = "BÁO CÁO THÔNG TIN USER ĐẦY ĐỦ",
             Font = AppTheme.FontLarge,
             ForeColor = AppTheme.TextTitle,
             AutoSize = true,
-            Location = new Point(10, 10)
+            Location = new Point(5, 12)
         };
         panelHeader.Controls.Add(lblTitle);
+
+        // Toolbar Panel
+        var panelToolbar = new Panel
+        {
+            Dock = DockStyle.Top,
+            Height = 50,
+            BackColor = AppTheme.CardBackground,
+            Padding = new Padding(10, 8, 10, 8)
+        };
 
         // User selector
         var lblUser = new Label
         {
             Text = "Chọn User:",
             Font = AppTheme.FontRegular,
-            Location = new Point(10, 50),
+            Location = new Point(10, 14),
             AutoSize = true
         };
-        panelHeader.Controls.Add(lblUser);
+        panelToolbar.Controls.Add(lblUser);
 
         cboUsers = new ComboBox
         {
             Font = AppTheme.FontRegular,
-            Location = new Point(90, 47),
+            Location = new Point(85, 10),
             Width = 200,
             DropDownStyle = ComboBoxStyle.DropDownList
         };
         cboUsers.SelectedIndexChanged += (s, e) => LoadUserReport();
-        panelHeader.Controls.Add(cboUsers);
+        panelToolbar.Controls.Add(cboUsers);
 
-        var btnRefresh = new Button
-        {
-            Text = "🔄 Làm mới",
-            Font = AppTheme.FontRegular,
-            Location = new Point(310, 45),
-            Size = new Size(100, 30),
-            BackColor = AppTheme.PrimaryButton,
-            ForeColor = AppTheme.ButtonText,
-            FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
-        };
-        btnRefresh.FlatAppearance.BorderSize = 0;
-        btnRefresh.Click += (s, e) => LoadUserReport();
-        panelHeader.Controls.Add(btnRefresh);
-
+        // Export Button
         var btnExport = new Button
         {
-            Text = "📄 Xuất",
+            Text = "Xuất báo cáo",
             Font = AppTheme.FontRegular,
-            Location = new Point(420, 45),
-            Size = new Size(80, 30),
+            Size = new Size(100, 32),
             BackColor = AppTheme.SuccessButton,
             ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Hand,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
         btnExport.FlatAppearance.BorderSize = 0;
         btnExport.Click += BtnExport_Click;
-        panelHeader.Controls.Add(btnExport);
+        panelToolbar.Controls.Add(btnExport);
+
+        // Refresh Button
+        var btnRefresh = new Button
+        {
+            Text = "Làm mới",
+            Font = AppTheme.FontRegular,
+            Size = new Size(100, 32),
+            BackColor = AppTheme.PrimaryButton,
+            ForeColor = AppTheme.ButtonText,
+            FlatStyle = FlatStyle.Flat,
+            Cursor = Cursors.Hand,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
+        };
+        btnRefresh.FlatAppearance.BorderSize = 0;
+        btnRefresh.Click += (s, e) => LoadUserReport();
+        panelToolbar.Controls.Add(btnRefresh);
+
+        panelToolbar.Resize += (s, e) =>
+        {
+            btnExport.Location = new Point(panelToolbar.Width - btnExport.Width - 10, 9);
+            btnRefresh.Location = new Point(btnExport.Left - btnRefresh.Width - 10, 9);
+        };
 
         // TabControl cho các bảng
         var tabControl = new TabControl
@@ -110,31 +126,31 @@ public partial class UserReportControl : UserControl
         };
 
         // Tab 1: Thông tin cơ bản
-        var tabInfo = new TabPage("👤 Thông tin cơ bản");
+        var tabInfo = new TabPage("Thông tin cơ bản");
         tabControl.TabPages.Add(tabInfo);
         dgvUserInfo = CreateDataGridView();
         tabInfo.Controls.Add(dgvUserInfo);
 
         // Tab 2: Roles
-        var tabRoles = new TabPage("🎭 Roles");
+        var tabRoles = new TabPage("Roles");
         tabControl.TabPages.Add(tabRoles);
         dgvRoles = CreateDataGridView();
         tabRoles.Controls.Add(dgvRoles);
 
         // Tab 3: Privileges
-        var tabPrivileges = new TabPage("🔑 Privileges");
+        var tabPrivileges = new TabPage("Privileges");
         tabControl.TabPages.Add(tabPrivileges);
         dgvPrivileges = CreateDataGridView();
         tabPrivileges.Controls.Add(dgvPrivileges);
 
         // Tab 4: Quotas
-        var tabQuotas = new TabPage("💾 Quotas");
+        var tabQuotas = new TabPage("Quotas");
         tabControl.TabPages.Add(tabQuotas);
         dgvQuotas = CreateDataGridView();
         tabQuotas.Controls.Add(dgvQuotas);
 
-        // Thêm controls theo thứ tự: Fill trước, Top sau
         this.Controls.Add(tabControl);
+        this.Controls.Add(panelToolbar);
         this.Controls.Add(panelHeader);
     }
 
@@ -156,15 +172,17 @@ public partial class UserReportControl : UserControl
             AllowUserToDeleteRows = false,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             RowHeadersVisible = false,
-            Font = AppTheme.FontRegular
+            Font = AppTheme.FontRegular,
+            GridColor = AppTheme.GridBorder
         };
 
         dgv.ColumnHeadersDefaultCellStyle.BackColor = AppTheme.GridHeader;
         dgv.ColumnHeadersDefaultCellStyle.ForeColor = AppTheme.GridHeaderText;
         dgv.ColumnHeadersDefaultCellStyle.Font = AppTheme.FontBold;
         dgv.ColumnHeadersHeight = 35;
-        dgv.RowTemplate.Height = 30;
+        dgv.RowTemplate.Height = 32;
         dgv.AlternatingRowsDefaultCellStyle.BackColor = AppTheme.GridAlternate;
+        dgv.DefaultCellStyle.SelectionBackColor = AppTheme.SidebarActive;
 
         return dgv;
     }

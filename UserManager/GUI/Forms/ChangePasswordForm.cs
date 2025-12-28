@@ -1,5 +1,6 @@
 using UserManager.BLL.Services;
 using UserManager.Common.Helpers;
+using UserManager.GUI.Core;
 
 namespace UserManager.GUI.Forms;
 
@@ -17,14 +18,8 @@ public partial class ChangePasswordForm : Form
     private TextBox txtNewPassword = null!;
     private TextBox txtConfirmPassword = null!;
 
-    /// <summary>
-    /// Constructor - đổi mật khẩu của chính mình
-    /// </summary>
     public ChangePasswordForm() : this(null) { }
 
-    /// <summary>
-    /// Constructor - đổi mật khẩu cho user khác (Admin only)
-    /// </summary>
     public ChangePasswordForm(string? targetUsername)
     {
         InitializeComponent();
@@ -39,17 +34,18 @@ public partial class ChangePasswordForm : Form
 
     private void SetupForm()
     {
-        this.Text = _isChangingOwnPassword ? "🔑 Đổi Mật Khẩu" : $"🔑 Đổi Mật Khẩu: {_targetUsername}";
+        this.Text = _isChangingOwnPassword ? "Đổi Mật Khẩu" : $"Đổi Mật Khẩu: {_targetUsername}";
         this.Size = new Size(450, _isChangingOwnPassword ? 380 : 340);
         this.StartPosition = FormStartPosition.CenterParent;
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.BackColor = Color.White;
+        this.BackColor = AppTheme.ContentBackground;
 
         var panel = new Panel
         {
             Dock = DockStyle.Fill,
+            BackColor = AppTheme.CardBackground,
             Padding = new Padding(30)
         };
         this.Controls.Add(panel);
@@ -59,9 +55,9 @@ public partial class ChangePasswordForm : Form
         // Title
         var lblTitle = new Label
         {
-            Text = "🔑 ĐỔI MẬT KHẨU",
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
-            ForeColor = Color.FromArgb(0, 102, 204),
+            Text = "ĐỔI MẬT KHẨU",
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
             AutoSize = true,
             Location = new Point(30, y)
         };
@@ -74,7 +70,8 @@ public partial class ChangePasswordForm : Form
             var lblCurrent = new Label
             {
                 Text = "Mật khẩu hiện tại:",
-                Font = new Font("Segoe UI", 10),
+                Font = AppTheme.FontRegular,
+                ForeColor = AppTheme.TextPrimary,
                 Location = new Point(30, y),
                 AutoSize = true
             };
@@ -96,7 +93,8 @@ public partial class ChangePasswordForm : Form
         var lblNew = new Label
         {
             Text = "Mật khẩu mới:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(30, y),
             AutoSize = true
         };
@@ -117,7 +115,8 @@ public partial class ChangePasswordForm : Form
         var lblConfirm = new Label
         {
             Text = "Xác nhận mật khẩu mới:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(30, y),
             AutoSize = true
         };
@@ -137,12 +136,12 @@ public partial class ChangePasswordForm : Form
         // Buttons
         var btnSave = new Button
         {
-            Text = "💾 Lưu",
-            Font = new Font("Segoe UI", 11, FontStyle.Bold),
+            Text = "Lưu",
+            Font = AppTheme.FontBold,
             Size = new Size(120, 40),
             Location = new Point(100, y),
-            BackColor = Color.FromArgb(40, 167, 69),
-            ForeColor = Color.White,
+            BackColor = AppTheme.SuccessButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -152,16 +151,17 @@ public partial class ChangePasswordForm : Form
 
         var btnCancel = new Button
         {
-            Text = "❌ Hủy",
-            Font = new Font("Segoe UI", 11),
+            Text = "Hủy",
+            Font = AppTheme.FontRegular,
             Size = new Size(120, 40),
             Location = new Point(230, y),
-            BackColor = Color.FromArgb(108, 117, 125),
-            ForeColor = Color.White,
+            BackColor = AppTheme.ContentBackground,
+            ForeColor = AppTheme.TextPrimary,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
-        btnCancel.FlatAppearance.BorderSize = 0;
+        btnCancel.FlatAppearance.BorderSize = 1;
+        btnCancel.FlatAppearance.BorderColor = AppTheme.CardBorder;
         btnCancel.Click += (s, e) => this.Close();
         panel.Controls.Add(btnCancel);
     }
@@ -170,7 +170,6 @@ public partial class ChangePasswordForm : Form
     {
         try
         {
-            // Validate
             if (_isChangingOwnPassword && string.IsNullOrEmpty(txtCurrentPassword.Text))
             {
                 MessageHelper.ShowWarning("Vui lòng nhập mật khẩu hiện tại");
@@ -192,7 +191,6 @@ public partial class ChangePasswordForm : Form
                 return;
             }
 
-            // Validate password strength
             var (isValid, errorMsg) = PasswordHelper.ValidatePasswordStrength(txtNewPassword.Text);
             if (!isValid)
             {
@@ -203,7 +201,6 @@ public partial class ChangePasswordForm : Form
 
             if (_isChangingOwnPassword)
             {
-                // Đổi mật khẩu của chính mình
                 var (success, message) = _authService.ChangeOwnPassword(txtCurrentPassword.Text, txtNewPassword.Text);
                 if (success)
                 {
@@ -218,7 +215,6 @@ public partial class ChangePasswordForm : Form
             }
             else
             {
-                // Admin đổi mật khẩu cho user khác
                 var user = new Models.UserModel
                 {
                     Username = _targetUsername!,

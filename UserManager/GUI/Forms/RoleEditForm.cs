@@ -1,5 +1,6 @@
 using UserManager.BLL.Services;
 using UserManager.Common.Helpers;
+using UserManager.GUI.Core;
 
 namespace UserManager.GUI.Forms;
 
@@ -41,11 +42,12 @@ public partial class RoleEditForm : Form
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.BackColor = Color.White;
+        this.BackColor = AppTheme.ContentBackground;
 
         var panel = new Panel
         {
             Dock = DockStyle.Fill,
+            BackColor = AppTheme.CardBackground,
             Padding = new Padding(30)
         };
         this.Controls.Add(panel);
@@ -55,9 +57,9 @@ public partial class RoleEditForm : Form
         // Title
         var lblTitle = new Label
         {
-            Text = _isEditMode ? "🎭 SỬA ROLE" : "🎭 TẠO ROLE MỚI",
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
-            ForeColor = Color.FromArgb(0, 102, 204),
+            Text = _isEditMode ? "SỬA ROLE" : "TẠO ROLE MỚI",
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
             AutoSize = true,
             Location = new Point(30, y)
         };
@@ -68,7 +70,8 @@ public partial class RoleEditForm : Form
         var lblRoleName = new Label
         {
             Text = "Tên Role:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(30, y),
             AutoSize = true
         };
@@ -89,8 +92,9 @@ public partial class RoleEditForm : Form
         // Has Password checkbox
         chkHasPassword = new CheckBox
         {
-            Text = "🔑 Role có mật khẩu",
-            Font = new Font("Segoe UI", 10),
+            Text = "Role có mật khẩu",
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(30, y),
             AutoSize = true
         };
@@ -102,7 +106,8 @@ public partial class RoleEditForm : Form
         var lblPassword = new Label
         {
             Text = "Mật khẩu:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(30, y),
             AutoSize = true
         };
@@ -124,7 +129,8 @@ public partial class RoleEditForm : Form
         var lblConfirm = new Label
         {
             Text = "Xác nhận mật khẩu:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(30, y),
             AutoSize = true
         };
@@ -145,9 +151,9 @@ public partial class RoleEditForm : Form
         // Password info label
         lblPasswordInfo = new Label
         {
-            Text = _isEditMode ? "💡 Để trống nếu không muốn đổi mật khẩu" : "",
-            Font = new Font("Segoe UI", 9, FontStyle.Italic),
-            ForeColor = Color.Gray,
+            Text = _isEditMode ? "Để trống nếu không muốn đổi mật khẩu" : "",
+            Font = AppTheme.FontSmall,
+            ForeColor = AppTheme.TextSecondary,
             Location = new Point(30, y),
             AutoSize = true,
             Visible = _isEditMode
@@ -157,12 +163,12 @@ public partial class RoleEditForm : Form
         // Buttons
         var btnSave = new Button
         {
-            Text = "💾 Lưu",
-            Font = new Font("Segoe UI", 11, FontStyle.Bold),
+            Text = "Lưu",
+            Font = AppTheme.FontBold,
             Size = new Size(120, 40),
             Location = new Point(100, 310),
-            BackColor = Color.FromArgb(40, 167, 69),
-            ForeColor = Color.White,
+            BackColor = AppTheme.SuccessButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -172,16 +178,17 @@ public partial class RoleEditForm : Form
 
         var btnCancel = new Button
         {
-            Text = "❌ Hủy",
-            Font = new Font("Segoe UI", 11),
+            Text = "Hủy",
+            Font = AppTheme.FontRegular,
             Size = new Size(120, 40),
             Location = new Point(230, 310),
-            BackColor = Color.FromArgb(108, 117, 125),
-            ForeColor = Color.White,
+            BackColor = AppTheme.ContentBackground,
+            ForeColor = AppTheme.TextPrimary,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
-        btnCancel.FlatAppearance.BorderSize = 0;
+        btnCancel.FlatAppearance.BorderSize = 1;
+        btnCancel.FlatAppearance.BorderColor = AppTheme.CardBorder;
         btnCancel.Click += (s, e) => this.Close();
         panel.Controls.Add(btnCancel);
     }
@@ -228,7 +235,6 @@ public partial class RoleEditForm : Form
         {
             var roleName = txtRoleName.Text.Trim().ToUpper();
 
-            // Validate
             if (string.IsNullOrWhiteSpace(roleName))
             {
                 MessageHelper.ShowWarning("Vui lòng nhập tên Role");
@@ -255,7 +261,6 @@ public partial class RoleEditForm : Form
 
             if (_isEditMode)
             {
-                // Edit mode: chỉ đổi password
                 if (chkHasPassword.Checked && !string.IsNullOrEmpty(txtPassword.Text))
                 {
                     _roleService.ChangeRolePassword(roleName, txtPassword.Text);
@@ -269,7 +274,6 @@ public partial class RoleEditForm : Form
             }
             else
             {
-                // Create mode
                 if (chkHasPassword.Checked)
                 {
                     _roleService.CreateRoleWithPassword(roleName, txtPassword.Text);

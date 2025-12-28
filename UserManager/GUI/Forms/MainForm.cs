@@ -100,7 +100,7 @@ public partial class MainForm : Form
         {
             Dock = DockStyle.Top,
             Height = 80,
-            BackColor = Color.FromArgb(34, 49, 63) // Darker
+            BackColor = Color.FromArgb(24, 24, 37) // Match header - darker than sidebar
         };
 
         var lblLogo = new Label
@@ -113,15 +113,14 @@ public partial class MainForm : Form
             Dock = DockStyle.Fill
         };
         panelLogo.Controls.Add(lblLogo);
-        panelSidebar.Controls.Add(panelLogo);
 
         // ===== USER INFO =====
         var panelUserInfo = new Panel
         {
             Dock = DockStyle.Top,
-            Height = 60,
+            Height = 50,
             BackColor = AppTheme.SidebarBackground,
-            Padding = new Padding(15, 10, 15, 10)
+            Padding = new Padding(15, 5, 15, 5)
         };
 
         var lblCurrentUser = new Label
@@ -134,7 +133,6 @@ public partial class MainForm : Form
             TextAlign = ContentAlignment.MiddleLeft
         };
         panelUserInfo.Controls.Add(lblCurrentUser);
-        panelSidebar.Controls.Add(panelUserInfo);
 
         // ===== SEPARATOR =====
         var separator1 = new Panel
@@ -143,7 +141,6 @@ public partial class MainForm : Form
             Height = 1,
             BackColor = AppTheme.SidebarHover
         };
-        panelSidebar.Controls.Add(separator1);
 
         // ===== MENU CONTAINER =====
         var panelMenu = new Panel
@@ -185,13 +182,13 @@ public partial class MainForm : Form
         yPos = AddMenuItem(panelMenu, "🔐", "Đổi mật khẩu", ShowChangePassword, yPos);
         yPos = AddMenuItem(panelMenu, "🚪", "Đăng xuất", Logout, yPos);
 
+        // QUAN TRỌNG: Thêm controls theo thứ tự đúng cho Docking
+        // 1. Thêm Fill panel đầu tiên
         panelSidebar.Controls.Add(panelMenu);
-
-        // Đảm bảo thứ tự đúng (từ trên xuống)
-        panelMenu.BringToFront();
-        separator1.BringToFront();
-        panelUserInfo.BringToFront();
-        panelLogo.BringToFront();
+        // 2. Thêm Top panels theo thứ tự ngược lại (cuối cùng thêm = ở trên cùng)
+        panelSidebar.Controls.Add(separator1);
+        panelSidebar.Controls.Add(panelUserInfo);
+        panelSidebar.Controls.Add(panelLogo);
     }
 
     private int AddMenuItem(Panel container, string icon, string text, Action onClick, int yPos)

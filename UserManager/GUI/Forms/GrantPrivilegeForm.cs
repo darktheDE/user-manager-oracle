@@ -1,6 +1,7 @@
 using UserManager.BLL.Services;
 using UserManager.Common.Helpers;
 using UserManager.Common.Constants;
+using UserManager.GUI.Core;
 using System.Data;
 
 namespace UserManager.GUI.Forms;
@@ -46,29 +47,29 @@ public partial class GrantPrivilegeForm : Form
 
     private void SetupForm()
     {
-        this.Text = "🔑 Grant Quyền";
+        this.Text = "Grant Quyền";
         this.Size = new Size(600, 550);
         this.StartPosition = FormStartPosition.CenterParent;
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.BackColor = Color.White;
+        this.BackColor = AppTheme.ContentBackground;
 
         // Header Panel
         var panelHeader = new Panel
         {
             Dock = DockStyle.Top,
             Height = 100,
-            BackColor = Color.White,
+            BackColor = AppTheme.CardBackground,
             Padding = new Padding(20)
         };
 
         // Title
         var lblTitle = new Label
         {
-            Text = "🔑 GRANT QUYỀN",
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
-            ForeColor = Color.FromArgb(0, 102, 204),
+            Text = "GRANT QUYỀN",
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
             AutoSize = true,
             Location = new Point(20, 10)
         };
@@ -77,8 +78,9 @@ public partial class GrantPrivilegeForm : Form
         // Grantee type
         rdoUser = new RadioButton
         {
-            Text = "👤 User",
-            Font = new Font("Segoe UI", 10),
+            Text = "User",
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(20, 45),
             AutoSize = true,
             Checked = true
@@ -88,9 +90,10 @@ public partial class GrantPrivilegeForm : Form
 
         rdoRole = new RadioButton
         {
-            Text = "🎭 Role",
-            Font = new Font("Segoe UI", 10),
-            Location = new Point(110, 45),
+            Text = "Role",
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
+            Location = new Point(100, 45),
             AutoSize = true
         };
         panelHeader.Controls.Add(rdoRole);
@@ -99,17 +102,18 @@ public partial class GrantPrivilegeForm : Form
         var lblGrantee = new Label
         {
             Text = "Gán cho:",
-            Font = new Font("Segoe UI", 10),
-            Location = new Point(200, 48),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
+            Location = new Point(180, 48),
             AutoSize = true
         };
         panelHeader.Controls.Add(lblGrantee);
 
         cboGrantee = new ComboBox
         {
-            Font = new Font("Segoe UI", 10),
-            Location = new Point(270, 45),
-            Width = 280,
+            Font = AppTheme.FontRegular,
+            Location = new Point(250, 45),
+            Width = 300,
             DropDownStyle = ComboBoxStyle.DropDownList
         };
         panelHeader.Controls.Add(cboGrantee);
@@ -118,21 +122,21 @@ public partial class GrantPrivilegeForm : Form
         tabControl = new TabControl
         {
             Dock = DockStyle.Fill,
-            Font = new Font("Segoe UI", 10)
+            Font = AppTheme.FontRegular
         };
 
         // Tab 1: System Privileges
-        var tabSystem = new TabPage("🔐 System Privilege");
+        var tabSystem = new TabPage("System Privilege");
         tabControl.TabPages.Add(tabSystem);
         SetupSystemPrivilegeTab(tabSystem);
 
         // Tab 2: Object Privileges
-        var tabObject = new TabPage("📦 Object Privilege");
+        var tabObject = new TabPage("Object Privilege");
         tabControl.TabPages.Add(tabObject);
         SetupObjectPrivilegeTab(tabObject);
 
         // Tab 3: Role Grant
-        var tabRole = new TabPage("🎭 Grant Role");
+        var tabRole = new TabPage("Grant Role");
         tabControl.TabPages.Add(tabRole);
         SetupRoleGrantTab(tabRole);
 
@@ -141,17 +145,17 @@ public partial class GrantPrivilegeForm : Form
         {
             Dock = DockStyle.Bottom,
             Height = 60,
-            BackColor = Color.FromArgb(248, 248, 248)
+            BackColor = AppTheme.CardBackground
         };
 
         var btnGrant = new Button
         {
-            Text = "✅ Grant",
-            Font = new Font("Segoe UI", 11, FontStyle.Bold),
+            Text = "Grant",
+            Font = AppTheme.FontBold,
             Size = new Size(120, 40),
             Location = new Point(200, 10),
-            BackColor = Color.FromArgb(40, 167, 69),
-            ForeColor = Color.White,
+            BackColor = AppTheme.SuccessButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -161,20 +165,21 @@ public partial class GrantPrivilegeForm : Form
 
         var btnClose = new Button
         {
-            Text = "❌ Đóng",
-            Font = new Font("Segoe UI", 11),
+            Text = "Đóng",
+            Font = AppTheme.FontRegular,
             Size = new Size(120, 40),
             Location = new Point(330, 10),
-            BackColor = Color.FromArgb(108, 117, 125),
-            ForeColor = Color.White,
+            BackColor = AppTheme.ContentBackground,
+            ForeColor = AppTheme.TextPrimary,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
-        btnClose.FlatAppearance.BorderSize = 0;
+        btnClose.FlatAppearance.BorderSize = 1;
+        btnClose.FlatAppearance.BorderColor = AppTheme.CardBorder;
         btnClose.Click += (s, e) => this.Close();
         panelButtons.Controls.Add(btnClose);
 
-        // Thêm controls theo thứ tự đúng: Fill trước, Bottom và Top sau
+        // Thêm controls theo thứ tự đúng
         this.Controls.Add(tabControl);
         this.Controls.Add(panelButtons);
         this.Controls.Add(panelHeader);
@@ -182,13 +187,15 @@ public partial class GrantPrivilegeForm : Form
 
     private void SetupSystemPrivilegeTab(TabPage tab)
     {
-        var panel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15) };
+        tab.BackColor = AppTheme.CardBackground;
+        var panel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15), BackColor = AppTheme.CardBackground };
         tab.Controls.Add(panel);
 
         var lblInfo = new Label
         {
             Text = "Chọn các System Privileges cần grant:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(10, 10),
             AutoSize = true
         };
@@ -196,12 +203,12 @@ public partial class GrantPrivilegeForm : Form
 
         clbSystemPrivileges = new CheckedListBox
         {
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(10, 40),
             Size = new Size(520, 250),
-            CheckOnClick = true
+            CheckOnClick = true,
+            BackColor = AppTheme.CardBackground
         };
-        // Add all system privileges
         foreach (var priv in SystemPrivileges.All)
         {
             clbSystemPrivileges.Items.Add(priv);
@@ -211,7 +218,8 @@ public partial class GrantPrivilegeForm : Form
         chkWithAdminOption = new CheckBox
         {
             Text = "WITH ADMIN OPTION (cho phép người nhận grant tiếp cho người khác)",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(10, 300),
             AutoSize = true
         };
@@ -220,7 +228,8 @@ public partial class GrantPrivilegeForm : Form
 
     private void SetupObjectPrivilegeTab(TabPage tab)
     {
-        var panel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15) };
+        tab.BackColor = AppTheme.CardBackground;
+        var panel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15), BackColor = AppTheme.CardBackground };
         tab.Controls.Add(panel);
 
         int y = 10;
@@ -229,7 +238,8 @@ public partial class GrantPrivilegeForm : Form
         var lblOwner = new Label
         {
             Text = "Owner (Schema):",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(10, y),
             AutoSize = true
         };
@@ -237,7 +247,7 @@ public partial class GrantPrivilegeForm : Form
 
         txtOwner = new TextBox
         {
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(150, y - 3),
             Width = 200,
             CharacterCasing = CharacterCasing.Upper,
@@ -250,7 +260,8 @@ public partial class GrantPrivilegeForm : Form
         var lblObject = new Label
         {
             Text = "Tên Table/View:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(10, y),
             AutoSize = true
         };
@@ -258,7 +269,7 @@ public partial class GrantPrivilegeForm : Form
 
         txtObjectName = new TextBox
         {
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(150, y - 3),
             Width = 200,
             CharacterCasing = CharacterCasing.Upper
@@ -270,7 +281,8 @@ public partial class GrantPrivilegeForm : Form
         var lblPrivs = new Label
         {
             Text = "Chọn quyền:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(10, y),
             AutoSize = true
         };
@@ -279,10 +291,11 @@ public partial class GrantPrivilegeForm : Form
 
         clbObjectPrivileges = new CheckedListBox
         {
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(10, y),
             Size = new Size(200, 150),
-            CheckOnClick = true
+            CheckOnClick = true,
+            BackColor = AppTheme.CardBackground
         };
         foreach (var priv in ObjectPrivileges.OnTable)
         {
@@ -294,7 +307,8 @@ public partial class GrantPrivilegeForm : Form
         chkWithGrantOption = new CheckBox
         {
             Text = "WITH GRANT OPTION",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(10, y),
             AutoSize = true
         };
@@ -303,13 +317,15 @@ public partial class GrantPrivilegeForm : Form
 
     private void SetupRoleGrantTab(TabPage tab)
     {
-        var panel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15) };
+        tab.BackColor = AppTheme.CardBackground;
+        var panel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(15), BackColor = AppTheme.CardBackground };
         tab.Controls.Add(panel);
 
         var lblInfo = new Label
         {
             Text = "Chọn các Role cần grant:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(10, 10),
             AutoSize = true
         };
@@ -317,17 +333,19 @@ public partial class GrantPrivilegeForm : Form
 
         clbRoles = new CheckedListBox
         {
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(10, 40),
             Size = new Size(520, 250),
-            CheckOnClick = true
+            CheckOnClick = true,
+            BackColor = AppTheme.CardBackground
         };
         panel.Controls.Add(clbRoles);
 
         chkRoleAdminOption = new CheckBox
         {
             Text = "WITH ADMIN OPTION",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(10, 300),
             AutoSize = true
         };

@@ -1,6 +1,7 @@
 using UserManager.BLL.Services;
 using UserManager.Models;
 using UserManager.Common.Helpers;
+using UserManager.GUI.Core;
 
 namespace UserManager.GUI.Forms;
 
@@ -65,23 +66,23 @@ public partial class UserEditForm : Form
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.BackColor = Color.White;
+        this.BackColor = AppTheme.ContentBackground;
 
         // TabControl
         var tabControl = new TabControl
         {
             Dock = DockStyle.Fill,
-            Font = new Font("Segoe UI", 10)
+            Font = AppTheme.FontRegular
         };
         this.Controls.Add(tabControl);
 
         // Tab 1: Thông tin Oracle User
-        var tabOracle = new TabPage("🔐 Tài khoản Oracle");
+        var tabOracle = new TabPage("Tài khoản Oracle");
         tabControl.TabPages.Add(tabOracle);
         SetupOracleTab(tabOracle);
 
         // Tab 2: Thông tin cá nhân
-        var tabInfo = new TabPage("👤 Thông tin cá nhân");
+        var tabInfo = new TabPage("Thông tin cá nhân");
         tabControl.TabPages.Add(tabInfo);
         SetupInfoTab(tabInfo);
 
@@ -90,18 +91,18 @@ public partial class UserEditForm : Form
         {
             Dock = DockStyle.Bottom,
             Height = 60,
-            BackColor = Color.FromArgb(248, 248, 248)
+            BackColor = AppTheme.CardBackground
         };
         this.Controls.Add(panelButtons);
 
         var btnSave = new Button
         {
-            Text = "💾 Lưu",
-            Font = new Font("Segoe UI", 11, FontStyle.Bold),
+            Text = "Lưu",
+            Font = AppTheme.FontBold,
             Size = new Size(120, 40),
             Location = new Point(panelButtons.Width / 2 - 130, 10),
-            BackColor = Color.FromArgb(40, 167, 69),
-            ForeColor = Color.White,
+            BackColor = AppTheme.SuccessButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand,
             Anchor = AnchorStyles.Top
@@ -112,17 +113,18 @@ public partial class UserEditForm : Form
 
         var btnCancel = new Button
         {
-            Text = "❌ Hủy",
-            Font = new Font("Segoe UI", 11),
+            Text = "Hủy",
+            Font = AppTheme.FontRegular,
             Size = new Size(120, 40),
             Location = new Point(panelButtons.Width / 2 + 10, 10),
-            BackColor = Color.FromArgb(108, 117, 125),
-            ForeColor = Color.White,
+            BackColor = AppTheme.ContentBackground,
+            ForeColor = AppTheme.TextPrimary,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand,
             Anchor = AnchorStyles.Top
         };
-        btnCancel.FlatAppearance.BorderSize = 0;
+        btnCancel.FlatAppearance.BorderSize = 1;
+        btnCancel.FlatAppearance.BorderColor = AppTheme.CardBorder;
         btnCancel.Click += (s, e) => this.Close();
         panelButtons.Controls.Add(btnCancel);
 

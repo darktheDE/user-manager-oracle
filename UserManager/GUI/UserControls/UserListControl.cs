@@ -25,25 +25,25 @@ public partial class UserListControl : UserControl
 
     private void SetupUI()
     {
-        this.BackColor = AppTheme.CardBackground;
-        this.Padding = new Padding(10);
+        this.BackColor = AppTheme.ContentBackground;
+        this.Padding = new Padding(15);
 
         // Header Panel
         var panelHeader = new Panel
         {
             Dock = DockStyle.Top,
-            Height = 60,
-            BackColor = AppTheme.CardBackground
+            Height = 50,
+            BackColor = AppTheme.ContentBackground
         };
 
         // Title
         var lblTitle = new Label
         {
-            Text = "👥 DANH SÁCH NGƯỜI DÙNG",
+            Text = "DANH SÁCH NGƯỜI DÙNG",
             Font = AppTheme.FontLarge,
             ForeColor = AppTheme.TextTitle,
             AutoSize = true,
-            Location = new Point(10, 15)
+            Location = new Point(5, 12)
         };
         panelHeader.Controls.Add(lblTitle);
 
@@ -52,51 +52,67 @@ public partial class UserListControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 50,
-            BackColor = AppTheme.GridAlternate
+            BackColor = AppTheme.CardBackground,
+            Padding = new Padding(10, 8, 10, 8)
         };
 
-        // Search TextBox
+        // Search TextBox - Left aligned
         txtSearch = new TextBox
         {
-            PlaceholderText = "🔍 Tìm kiếm username...",
+            PlaceholderText = "Tìm kiếm username...",
             Font = AppTheme.FontRegular,
             Location = new Point(10, 10),
-            Size = new Size(250, 30)
+            Size = new Size(280, 30)
         };
         txtSearch.TextChanged += (s, e) => FilterData();
         panelToolbar.Controls.Add(txtSearch);
 
-        // Add Button
+        // Add Button - Right aligned (sau Refresh)
         var btnAdd = new Button
         {
-            Text = "➕ Thêm mới",
+            Text = "Thêm mới",
             Font = AppTheme.FontRegular,
-            Location = new Point(280, 8),
             Size = new Size(100, 32),
             BackColor = AppTheme.SuccessButton,
             ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Hand,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
         btnAdd.FlatAppearance.BorderSize = 0;
         btnAdd.Click += (s, e) => AddUser();
         panelToolbar.Controls.Add(btnAdd);
 
-        // Refresh Button
+        // Refresh Button - Right aligned (trước Add)
         var btnRefresh = new Button
         {
-            Text = "🔄 Làm mới",
+            Text = "Làm mới",
             Font = AppTheme.FontRegular,
-            Location = new Point(390, 8),
             Size = new Size(100, 32),
             BackColor = AppTheme.PrimaryButton,
             ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Hand,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
         btnRefresh.FlatAppearance.BorderSize = 0;
         btnRefresh.Click += (s, e) => LoadData();
         panelToolbar.Controls.Add(btnRefresh);
+
+        // Position buttons on the right
+        panelToolbar.Resize += (s, e) =>
+        {
+            btnAdd.Location = new Point(panelToolbar.Width - btnAdd.Width - 10, 9);
+            btnRefresh.Location = new Point(btnAdd.Left - btnRefresh.Width - 10, 9);
+        };
+
+        // Card Panel để chứa DataGridView
+        var panelCard = new Panel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = AppTheme.CardBackground,
+            Padding = new Padding(1)
+        };
 
         // DataGridView
         dgvUsers = new DataGridView
@@ -115,38 +131,42 @@ public partial class UserListControl : UserControl
             AllowUserToDeleteRows = false,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             RowHeadersVisible = false,
-            Font = AppTheme.FontRegular
+            Font = AppTheme.FontRegular,
+            GridColor = AppTheme.GridBorder
         };
 
         // Header style
         dgvUsers.ColumnHeadersDefaultCellStyle.BackColor = AppTheme.GridHeader;
         dgvUsers.ColumnHeadersDefaultCellStyle.ForeColor = AppTheme.GridHeaderText;
         dgvUsers.ColumnHeadersDefaultCellStyle.Font = AppTheme.FontBold;
-        dgvUsers.ColumnHeadersDefaultCellStyle.Padding = new Padding(5);
+        dgvUsers.ColumnHeadersDefaultCellStyle.Padding = new Padding(8, 0, 8, 0);
         dgvUsers.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
         dgvUsers.ColumnHeadersHeight = 40;
 
         // Row style
-        dgvUsers.DefaultCellStyle.Padding = new Padding(5);
-        dgvUsers.RowTemplate.Height = 35;
+        dgvUsers.DefaultCellStyle.Padding = new Padding(8, 0, 8, 0);
+        dgvUsers.DefaultCellStyle.SelectionBackColor = AppTheme.SidebarActive;
+        dgvUsers.DefaultCellStyle.SelectionForeColor = Color.White;
+        dgvUsers.RowTemplate.Height = 38;
         dgvUsers.AlternatingRowsDefaultCellStyle.BackColor = AppTheme.GridAlternate;
 
         // Context Menu
         var contextMenu = new ContextMenuStrip();
-        contextMenu.Items.Add("✏️ Sửa", null, (s, e) => EditUser());
-        contextMenu.Items.Add("🔒 Khóa/Mở khóa", null, (s, e) => ToggleLock());
-        contextMenu.Items.Add("🔑 Đổi mật khẩu", null, (s, e) => ChangePassword());
+        contextMenu.Items.Add("Sửa", null, (s, e) => EditUser());
+        contextMenu.Items.Add("Khóa/Mở khóa", null, (s, e) => ToggleLock());
+        contextMenu.Items.Add("Đổi mật khẩu", null, (s, e) => ChangePassword());
         contextMenu.Items.Add(new ToolStripSeparator());
-        contextMenu.Items.Add("❌ Xóa", null, (s, e) => DeleteUser());
+        contextMenu.Items.Add("Xóa", null, (s, e) => DeleteUser());
         dgvUsers.ContextMenuStrip = contextMenu;
 
         dgvUsers.CellDoubleClick += (s, e) => EditUser();
 
-        // QUAN TRỌNG: Thêm controls theo thứ tự ngược lại
-        // Với Dock, control thêm SAU sẽ chiếm vị trí phía trên
-        this.Controls.Add(dgvUsers);      // Fill - thêm đầu tiên
-        this.Controls.Add(panelToolbar);  // Top - thêm sau sẽ ở trên
-        this.Controls.Add(panelHeader);   // Top - thêm cuối sẽ ở trên cùng
+        panelCard.Controls.Add(dgvUsers);
+
+        // Add controls in correct order for docking
+        this.Controls.Add(panelCard);      // Fill
+        this.Controls.Add(panelToolbar);   // Top
+        this.Controls.Add(panelHeader);    // Top
     }
 
     private DataTable? _originalData;
@@ -157,8 +177,6 @@ public partial class UserListControl : UserControl
         {
             _originalData = _userService.GetAllUsers();
             dgvUsers.DataSource = _originalData;
-
-            // Đặt tiêu đề cột tiếng Việt
             FormatColumns();
         }
         catch (Exception ex)
@@ -171,7 +189,6 @@ public partial class UserListControl : UserControl
     {
         if (dgvUsers.Columns.Count == 0) return;
 
-        // Mapping tên cột -> tiêu đề tiếng Việt
         var columnHeaders = new Dictionary<string, string>
         {
             { "USERNAME", "Tên đăng nhập" },
@@ -191,7 +208,6 @@ public partial class UserListControl : UserControl
             }
         }
 
-        // Đặt độ rộng tùy chỉnh cho một số cột
         if (dgvUsers.Columns.Contains("USERNAME"))
             dgvUsers.Columns["USERNAME"].FillWeight = 15;
         if (dgvUsers.Columns.Contains("ACCOUNT_STATUS"))
@@ -309,7 +325,7 @@ public partial class UserListControl : UserControl
 
         try
         {
-            if (MessageHelper.ShowConfirm($"⚠️ Bạn có chắc muốn XÓA user '{username}'?\n\nĐây là hành động không thể hoàn tác!"))
+            if (MessageHelper.ShowConfirm($"Bạn có chắc muốn XÓA user '{username}'?\n\nĐây là hành động không thể hoàn tác!"))
             {
                 _userService.DeleteUser(username);
                 MessageHelper.ShowSuccess($"Đã xóa user '{username}'");

@@ -26,14 +26,122 @@ public partial class LoginForm : Form
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.Size = new Size(450, 350);
+        this.Size = new Size(500, 320);
         this.BackColor = AppTheme.CardBackground;
 
-        // Left Panel (branding)
-        var panelLeft = new Panel
+        // Main content panel (login form) - LEFT side
+        var panelContent = new Panel
         {
-            Dock = DockStyle.Left,
-            Width = 150,
+            Dock = DockStyle.Fill,
+            BackColor = AppTheme.CardBackground,
+            Padding = new Padding(30, 20, 20, 20)
+        };
+
+        // Title Label
+        var lblTitle = new Label
+        {
+            Text = "Đăng Nhập",
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
+            AutoSize = true,
+            Location = new Point(30, 20)
+        };
+        panelContent.Controls.Add(lblTitle);
+
+        // Subtitle
+        var lblSubtitle = new Label
+        {
+            Text = "Vui lòng nhập thông tin đăng nhập Oracle",
+            Font = AppTheme.FontSmall,
+            ForeColor = AppTheme.TextSecondary,
+            AutoSize = true,
+            Location = new Point(30, 50)
+        };
+        panelContent.Controls.Add(lblSubtitle);
+
+        // Username Label
+        var lblUsername = new Label
+        {
+            Text = "Tên đăng nhập",
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
+            Location = new Point(30, 85),
+            AutoSize = true
+        };
+        panelContent.Controls.Add(lblUsername);
+
+        // Username TextBox
+        txtUsername = new TextBox
+        {
+            Font = new Font("Segoe UI", 11),
+            Location = new Point(30, 108),
+            Size = new Size(220, 30),
+            PlaceholderText = "Nhập username Oracle..."
+        };
+        panelContent.Controls.Add(txtUsername);
+
+        // Password Label
+        var lblPassword = new Label
+        {
+            Text = "Mật khẩu",
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
+            Location = new Point(30, 145),
+            AutoSize = true
+        };
+        panelContent.Controls.Add(lblPassword);
+
+        // Password TextBox
+        txtPassword = new TextBox
+        {
+            Font = new Font("Segoe UI", 11),
+            Location = new Point(30, 168),
+            Size = new Size(220, 30),
+            PasswordChar = '●',
+            PlaceholderText = "Nhập mật khẩu..."
+        };
+        panelContent.Controls.Add(txtPassword);
+
+        // Login Button
+        btnLogin = new Button
+        {
+            Text = "Đăng Nhập",
+            Font = AppTheme.FontBold,
+            Location = new Point(30, 215),
+            Size = new Size(105, 38),
+            BackColor = AppTheme.PrimaryButton,
+            ForeColor = AppTheme.ButtonText,
+            FlatStyle = FlatStyle.Flat,
+            Cursor = Cursors.Hand
+        };
+        btnLogin.FlatAppearance.BorderSize = 0;
+        btnLogin.Click += BtnLogin_Click;
+        panelContent.Controls.Add(btnLogin);
+
+        // Cancel Button
+        btnCancel = new Button
+        {
+            Text = "Thoát",
+            Font = AppTheme.FontRegular,
+            Location = new Point(145, 215),
+            Size = new Size(105, 38),
+            BackColor = AppTheme.ContentBackground,
+            ForeColor = AppTheme.TextPrimary,
+            FlatStyle = FlatStyle.Flat,
+            Cursor = Cursors.Hand
+        };
+        btnCancel.FlatAppearance.BorderSize = 1;
+        btnCancel.FlatAppearance.BorderColor = AppTheme.CardBorder;
+        btnCancel.Click += (s, e) => Application.Exit();
+        panelContent.Controls.Add(btnCancel);
+
+        this.Controls.Add(panelContent);
+
+        // Branding Panel - RIGHT side
+        var panelBrand = new Panel
+        {
+            Dock = DockStyle.Right,
+            Width = 180,
             BackColor = AppTheme.SidebarBackground
         };
 
@@ -46,7 +154,7 @@ public partial class LoginForm : Form
             TextAlign = ContentAlignment.MiddleCenter,
             Dock = DockStyle.Fill
         };
-        panelLeft.Controls.Add(lblBrand);
+        panelBrand.Controls.Add(lblBrand);
         
         var lblBrandText = new Label
         {
@@ -58,117 +166,9 @@ public partial class LoginForm : Form
             Dock = DockStyle.Bottom,
             Height = 50
         };
-        panelLeft.Controls.Add(lblBrandText);
+        panelBrand.Controls.Add(lblBrandText);
         
-        this.Controls.Add(panelLeft);
-
-        // Right Panel (login form)
-        var panelRight = new Panel
-        {
-            Dock = DockStyle.Fill,
-            BackColor = AppTheme.CardBackground,
-            Padding = new Padding(20)
-        };
-
-        // Title Label
-        var lblTitle = new Label
-        {
-            Text = "Đăng Nhập",
-            Font = AppTheme.FontLarge,
-            ForeColor = AppTheme.TextTitle,
-            AutoSize = true,
-            Location = new Point(20, 30)
-        };
-        panelRight.Controls.Add(lblTitle);
-
-        // Subtitle
-        var lblSubtitle = new Label
-        {
-            Text = "Vui lòng nhập thông tin đăng nhập Oracle",
-            Font = AppTheme.FontSmall,
-            ForeColor = AppTheme.TextSecondary,
-            AutoSize = true,
-            Location = new Point(20, 60)
-        };
-        panelRight.Controls.Add(lblSubtitle);
-
-        // Username Label
-        var lblUsername = new Label
-        {
-            Text = "Tên đăng nhập",
-            Font = AppTheme.FontRegular,
-            ForeColor = AppTheme.TextPrimary,
-            Location = new Point(20, 100),
-            AutoSize = true
-        };
-        panelRight.Controls.Add(lblUsername);
-
-        // Username TextBox
-        txtUsername = new TextBox
-        {
-            Font = new Font("Segoe UI", 11),
-            Location = new Point(20, 125),
-            Size = new Size(240, 30),
-            PlaceholderText = "Nhập username Oracle..."
-        };
-        panelRight.Controls.Add(txtUsername);
-
-        // Password Label
-        var lblPassword = new Label
-        {
-            Text = "Mật khẩu",
-            Font = AppTheme.FontRegular,
-            ForeColor = AppTheme.TextPrimary,
-            Location = new Point(20, 165),
-            AutoSize = true
-        };
-        panelRight.Controls.Add(lblPassword);
-
-        // Password TextBox
-        txtPassword = new TextBox
-        {
-            Font = new Font("Segoe UI", 11),
-            Location = new Point(20, 190),
-            Size = new Size(240, 30),
-            PasswordChar = '●',
-            PlaceholderText = "Nhập mật khẩu..."
-        };
-        panelRight.Controls.Add(txtPassword);
-
-        // Login Button
-        btnLogin = new Button
-        {
-            Text = "Đăng Nhập",
-            Font = AppTheme.FontBold,
-            Location = new Point(20, 240),
-            Size = new Size(115, 38),
-            BackColor = AppTheme.PrimaryButton,
-            ForeColor = AppTheme.ButtonText,
-            FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
-        };
-        btnLogin.FlatAppearance.BorderSize = 0;
-        btnLogin.Click += BtnLogin_Click;
-        panelRight.Controls.Add(btnLogin);
-
-        // Cancel Button
-        btnCancel = new Button
-        {
-            Text = "Thoát",
-            Font = AppTheme.FontRegular,
-            Location = new Point(145, 240),
-            Size = new Size(115, 38),
-            BackColor = AppTheme.ContentBackground,
-            ForeColor = AppTheme.TextPrimary,
-            FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
-        };
-        btnCancel.FlatAppearance.BorderSize = 1;
-        btnCancel.FlatAppearance.BorderColor = AppTheme.CardBorder;
-        btnCancel.Click += (s, e) => Application.Exit();
-        panelRight.Controls.Add(btnCancel);
-
-        this.Controls.Add(panelRight);
+        this.Controls.Add(panelBrand);
 
         // Accept button
         this.AcceptButton = btnLogin;
@@ -201,7 +201,7 @@ public partial class LoginForm : Form
         try
         {
             btnLogin.Enabled = false;
-            btnLogin.Text = "Đang đăng nhập...";
+            btnLogin.Text = "Đang xử lý...";
             Application.DoEvents();
 
             var authService = new BLL.Services.AuthService();

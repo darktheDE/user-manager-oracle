@@ -2,6 +2,7 @@ using UserManager.BLL.Services;
 using UserManager.Models;
 using UserManager.Common.Helpers;
 using UserManager.Common.Constants;
+using UserManager.GUI.Core;
 
 namespace UserManager.GUI.Forms;
 
@@ -42,11 +43,12 @@ public partial class ProfileEditForm : Form
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.BackColor = Color.White;
+        this.BackColor = AppTheme.ContentBackground;
 
         var panel = new Panel
         {
             Dock = DockStyle.Fill,
+            BackColor = AppTheme.CardBackground,
             Padding = new Padding(30)
         };
         this.Controls.Add(panel);
@@ -58,9 +60,9 @@ public partial class ProfileEditForm : Form
         // Title
         var lblTitle = new Label
         {
-            Text = _isEditMode ? "📊 SỬA PROFILE" : "📊 TẠO PROFILE MỚI",
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
-            ForeColor = Color.FromArgb(0, 102, 204),
+            Text = _isEditMode ? "SỬA PROFILE" : "TẠO PROFILE MỚI",
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
             AutoSize = true,
             Location = new Point(30, y)
         };
@@ -83,9 +85,9 @@ public partial class ProfileEditForm : Form
         // Info label
         var lblInfo = new Label
         {
-            Text = "💡 Các giá trị: UNLIMITED, DEFAULT, hoặc số cụ thể",
-            Font = new Font("Segoe UI", 9, FontStyle.Italic),
-            ForeColor = Color.Gray,
+            Text = "Các giá trị: UNLIMITED, DEFAULT, hoặc số cụ thể",
+            Font = AppTheme.FontSmall,
+            ForeColor = AppTheme.TextSecondary,
             Location = new Point(30, y),
             AutoSize = true
         };
@@ -113,12 +115,12 @@ public partial class ProfileEditForm : Form
         // Buttons
         var btnSave = new Button
         {
-            Text = "💾 Lưu",
-            Font = new Font("Segoe UI", 11, FontStyle.Bold),
+            Text = "Lưu",
+            Font = AppTheme.FontBold,
             Size = new Size(120, 40),
             Location = new Point(120, y),
-            BackColor = Color.FromArgb(40, 167, 69),
-            ForeColor = Color.White,
+            BackColor = AppTheme.SuccessButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -128,16 +130,17 @@ public partial class ProfileEditForm : Form
 
         var btnCancel = new Button
         {
-            Text = "❌ Hủy",
-            Font = new Font("Segoe UI", 11),
+            Text = "Hủy",
+            Font = AppTheme.FontRegular,
             Size = new Size(120, 40),
             Location = new Point(250, y),
-            BackColor = Color.FromArgb(108, 117, 125),
-            ForeColor = Color.White,
+            BackColor = AppTheme.ContentBackground,
+            ForeColor = AppTheme.TextPrimary,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
-        btnCancel.FlatAppearance.BorderSize = 0;
+        btnCancel.FlatAppearance.BorderSize = 1;
+        btnCancel.FlatAppearance.BorderColor = AppTheme.CardBorder;
         btnCancel.Click += (s, e) => this.Close();
         panel.Controls.Add(btnCancel);
     }
@@ -147,7 +150,8 @@ public partial class ProfileEditForm : Form
         var label = new Label
         {
             Text = text,
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
             Location = new Point(x, y),
             AutoSize = true
         };
@@ -158,7 +162,7 @@ public partial class ProfileEditForm : Form
     {
         var cbo = new ComboBox
         {
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(x, y),
             Width = width,
             DropDownStyle = ComboBoxStyle.DropDown
@@ -208,7 +212,6 @@ public partial class ProfileEditForm : Form
         {
             var profileName = txtProfileName.Text.Trim().ToUpper();
 
-            // Validate
             if (string.IsNullOrWhiteSpace(profileName))
             {
                 MessageHelper.ShowWarning("Vui lòng nhập tên Profile");

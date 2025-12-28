@@ -23,25 +23,24 @@ public partial class RoleListControl : UserControl
 
     private void SetupUI()
     {
-        this.BackColor = AppTheme.CardBackground;
-        this.Padding = new Padding(10);
+        this.BackColor = AppTheme.ContentBackground;
+        this.Padding = new Padding(15);
 
         // Header Panel
         var panelHeader = new Panel
         {
             Dock = DockStyle.Top,
-            Height = 60,
-            BackColor = AppTheme.CardBackground
+            Height = 50,
+            BackColor = AppTheme.ContentBackground
         };
 
-        // Title
         var lblTitle = new Label
         {
-            Text = "🎭 DANH SÁCH ROLE",
+            Text = "DANH SÁCH ROLE",
             Font = AppTheme.FontLarge,
             ForeColor = AppTheme.TextTitle,
             AutoSize = true,
-            Location = new Point(10, 15)
+            Location = new Point(5, 12)
         };
         panelHeader.Controls.Add(lblTitle);
 
@@ -50,20 +49,21 @@ public partial class RoleListControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 50,
-            BackColor = AppTheme.GridAlternate
+            BackColor = AppTheme.CardBackground,
+            Padding = new Padding(10, 8, 10, 8)
         };
 
         // Add Button
         var btnAdd = new Button
         {
-            Text = "➕ Thêm mới",
+            Text = "Thêm mới",
             Font = AppTheme.FontRegular,
-            Location = new Point(10, 8),
             Size = new Size(100, 32),
             BackColor = AppTheme.SuccessButton,
             ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Hand,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
         btnAdd.FlatAppearance.BorderSize = 0;
         btnAdd.Click += (s, e) => AddRole();
@@ -72,18 +72,32 @@ public partial class RoleListControl : UserControl
         // Refresh Button
         var btnRefresh = new Button
         {
-            Text = "🔄 Làm mới",
+            Text = "Làm mới",
             Font = AppTheme.FontRegular,
-            Location = new Point(120, 8),
             Size = new Size(100, 32),
             BackColor = AppTheme.PrimaryButton,
             ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Hand,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
         btnRefresh.FlatAppearance.BorderSize = 0;
         btnRefresh.Click += (s, e) => LoadData();
         panelToolbar.Controls.Add(btnRefresh);
+
+        panelToolbar.Resize += (s, e) =>
+        {
+            btnAdd.Location = new Point(panelToolbar.Width - btnAdd.Width - 10, 9);
+            btnRefresh.Location = new Point(btnAdd.Left - btnRefresh.Width - 10, 9);
+        };
+
+        // Card Panel
+        var panelCard = new Panel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = AppTheme.CardBackground,
+            Padding = new Padding(1)
+        };
 
         // DataGridView
         dgvRoles = new DataGridView
@@ -102,28 +116,29 @@ public partial class RoleListControl : UserControl
             AllowUserToDeleteRows = false,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             RowHeadersVisible = false,
-            Font = AppTheme.FontRegular
+            Font = AppTheme.FontRegular,
+            GridColor = AppTheme.GridBorder
         };
 
-        // Header style
         dgvRoles.ColumnHeadersDefaultCellStyle.BackColor = AppTheme.GridHeader;
         dgvRoles.ColumnHeadersDefaultCellStyle.ForeColor = AppTheme.GridHeaderText;
         dgvRoles.ColumnHeadersDefaultCellStyle.Font = AppTheme.FontBold;
         dgvRoles.ColumnHeadersHeight = 40;
-        dgvRoles.RowTemplate.Height = 35;
+        dgvRoles.RowTemplate.Height = 38;
         dgvRoles.AlternatingRowsDefaultCellStyle.BackColor = AppTheme.GridAlternate;
+        dgvRoles.DefaultCellStyle.SelectionBackColor = AppTheme.SidebarActive;
 
-        // Context Menu
         var contextMenu = new ContextMenuStrip();
-        contextMenu.Items.Add("✏️ Sửa Password", null, (s, e) => EditRolePassword());
-        contextMenu.Items.Add("📋 Xem Privileges", null, (s, e) => ViewRolePrivileges());
-        contextMenu.Items.Add("📋 Xem Grantees", null, (s, e) => ViewRoleGrantees());
+        contextMenu.Items.Add("Sửa Password", null, (s, e) => EditRolePassword());
+        contextMenu.Items.Add("Xem Privileges", null, (s, e) => ViewRolePrivileges());
+        contextMenu.Items.Add("Xem Grantees", null, (s, e) => ViewRoleGrantees());
         contextMenu.Items.Add(new ToolStripSeparator());
-        contextMenu.Items.Add("❌ Xóa", null, (s, e) => DeleteRole());
+        contextMenu.Items.Add("Xóa", null, (s, e) => DeleteRole());
         dgvRoles.ContextMenuStrip = contextMenu;
 
-        // Thêm controls theo thứ tự: Fill trước, Top sau
-        this.Controls.Add(dgvRoles);
+        panelCard.Controls.Add(dgvRoles);
+
+        this.Controls.Add(panelCard);
         this.Controls.Add(panelToolbar);
         this.Controls.Add(panelHeader);
     }
@@ -246,7 +261,7 @@ public partial class RoleListControl : UserControl
 
         try
         {
-            if (MessageHelper.ShowConfirm($"⚠️ Bạn có chắc muốn XÓA role '{roleName}'?"))
+            if (MessageHelper.ShowConfirm($"Bạn có chắc muốn XÓA role '{roleName}'?"))
             {
                 _roleService.DeleteRole(roleName);
                 MessageHelper.ShowSuccess($"Đã xóa role '{roleName}'");

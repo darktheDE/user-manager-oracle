@@ -25,25 +25,24 @@ public partial class UserInfoListControl : UserControl
 
     private void SetupUI()
     {
-        this.BackColor = AppTheme.CardBackground;
-        this.Padding = new Padding(10);
+        this.BackColor = AppTheme.ContentBackground;
+        this.Padding = new Padding(15);
 
         // Header Panel
         var panelHeader = new Panel
         {
             Dock = DockStyle.Top,
-            Height = 60,
-            BackColor = AppTheme.CardBackground
+            Height = 50,
+            BackColor = AppTheme.ContentBackground
         };
 
-        // Title
         var lblTitle = new Label
         {
-            Text = "📝 THÔNG TIN CÁ NHÂN BỔ SUNG",
+            Text = "THÔNG TIN CÁ NHÂN BỔ SUNG",
             Font = AppTheme.FontLarge,
             ForeColor = AppTheme.TextTitle,
             AutoSize = true,
-            Location = new Point(10, 15)
+            Location = new Point(5, 12)
         };
         panelHeader.Controls.Add(lblTitle);
 
@@ -52,16 +51,17 @@ public partial class UserInfoListControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 50,
-            BackColor = AppTheme.GridAlternate
+            BackColor = AppTheme.CardBackground,
+            Padding = new Padding(10, 8, 10, 8)
         };
 
         // Search TextBox
         txtSearch = new TextBox
         {
-            PlaceholderText = "🔍 Tìm kiếm theo tên hoặc username...",
+            PlaceholderText = "Tìm kiếm theo tên hoặc username...",
             Font = AppTheme.FontRegular,
             Location = new Point(10, 10),
-            Size = new Size(250, 30)
+            Size = new Size(280, 30)
         };
         txtSearch.TextChanged += (s, e) => FilterData();
         panelToolbar.Controls.Add(txtSearch);
@@ -69,14 +69,14 @@ public partial class UserInfoListControl : UserControl
         // Add Button
         var btnAdd = new Button
         {
-            Text = "➕ Thêm mới",
+            Text = "Thêm mới",
             Font = AppTheme.FontRegular,
-            Location = new Point(280, 8),
             Size = new Size(100, 32),
             BackColor = AppTheme.SuccessButton,
             ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Hand,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
         btnAdd.FlatAppearance.BorderSize = 0;
         btnAdd.Click += (s, e) => AddUserInfo();
@@ -85,18 +85,32 @@ public partial class UserInfoListControl : UserControl
         // Refresh Button
         var btnRefresh = new Button
         {
-            Text = "🔄 Làm mới",
+            Text = "Làm mới",
             Font = AppTheme.FontRegular,
-            Location = new Point(390, 8),
             Size = new Size(100, 32),
             BackColor = AppTheme.PrimaryButton,
             ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
-            Cursor = Cursors.Hand
+            Cursor = Cursors.Hand,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
         };
         btnRefresh.FlatAppearance.BorderSize = 0;
         btnRefresh.Click += (s, e) => LoadData();
         panelToolbar.Controls.Add(btnRefresh);
+
+        panelToolbar.Resize += (s, e) =>
+        {
+            btnAdd.Location = new Point(panelToolbar.Width - btnAdd.Width - 10, 9);
+            btnRefresh.Location = new Point(btnAdd.Left - btnRefresh.Width - 10, 9);
+        };
+
+        // Card Panel
+        var panelCard = new Panel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = AppTheme.CardBackground,
+            Padding = new Padding(1)
+        };
 
         // DataGridView
         dgvUserInfo = new DataGridView
@@ -115,28 +129,29 @@ public partial class UserInfoListControl : UserControl
             AllowUserToDeleteRows = false,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             RowHeadersVisible = false,
-            Font = AppTheme.FontRegular
+            Font = AppTheme.FontRegular,
+            GridColor = AppTheme.GridBorder
         };
 
-        // Header style
         dgvUserInfo.ColumnHeadersDefaultCellStyle.BackColor = AppTheme.GridHeader;
         dgvUserInfo.ColumnHeadersDefaultCellStyle.ForeColor = AppTheme.GridHeaderText;
         dgvUserInfo.ColumnHeadersDefaultCellStyle.Font = AppTheme.FontBold;
         dgvUserInfo.ColumnHeadersHeight = 40;
-        dgvUserInfo.RowTemplate.Height = 35;
+        dgvUserInfo.RowTemplate.Height = 38;
         dgvUserInfo.AlternatingRowsDefaultCellStyle.BackColor = AppTheme.GridAlternate;
+        dgvUserInfo.DefaultCellStyle.SelectionBackColor = AppTheme.SidebarActive;
 
-        // Context Menu
         var contextMenu = new ContextMenuStrip();
-        contextMenu.Items.Add("✏️ Sửa", null, (s, e) => EditUserInfo());
+        contextMenu.Items.Add("Sửa", null, (s, e) => EditUserInfo());
         contextMenu.Items.Add(new ToolStripSeparator());
-        contextMenu.Items.Add("❌ Xóa", null, (s, e) => DeleteUserInfo());
+        contextMenu.Items.Add("Xóa", null, (s, e) => DeleteUserInfo());
         dgvUserInfo.ContextMenuStrip = contextMenu;
 
         dgvUserInfo.CellDoubleClick += (s, e) => EditUserInfo();
 
-        // Thêm controls theo thứ tự: Fill trước, Top sau
-        this.Controls.Add(dgvUserInfo);
+        panelCard.Controls.Add(dgvUserInfo);
+
+        this.Controls.Add(panelCard);
         this.Controls.Add(panelToolbar);
         this.Controls.Add(panelHeader);
     }
@@ -152,13 +167,11 @@ public partial class UserInfoListControl : UserControl
 
             if (dgvUserInfo.Columns.Count > 0)
             {
-                // Ẩn cột ID
                 if (dgvUserInfo.Columns.Contains("USER_INFO_ID"))
                     dgvUserInfo.Columns["USER_INFO_ID"].Visible = false;
                 if (dgvUserInfo.Columns.Contains("IS_ACTIVE"))
                     dgvUserInfo.Columns["IS_ACTIVE"].Visible = false;
 
-                // Đổi tên hiển thị
                 if (dgvUserInfo.Columns.Contains("USERNAME"))
                     dgvUserInfo.Columns["USERNAME"].HeaderText = "Username";
                 if (dgvUserInfo.Columns.Contains("HO_TEN"))
@@ -241,7 +254,7 @@ public partial class UserInfoListControl : UserControl
 
         try
         {
-            if (MessageHelper.ShowConfirm($"⚠️ Bạn có chắc muốn XÓA thông tin cá nhân của '{username}'?"))
+            if (MessageHelper.ShowConfirm($"Bạn có chắc muốn XÓA thông tin cá nhân của '{username}'?"))
             {
                 _userInfoRepo.SoftDelete(username);
                 MessageHelper.ShowSuccess($"Đã xóa thông tin của '{username}'");
