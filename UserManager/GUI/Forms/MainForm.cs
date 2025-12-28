@@ -1,21 +1,37 @@
 using UserManager.BLL.Services;
 using UserManager.GUI.UserControls;
+using UserManager.GUI.Core;
 
 namespace UserManager.GUI.Forms;
 
 /// <summary>
-/// Form chính của ứng dụng
+/// Form chính của ứng dụng với sidebar navigation
 /// </summary>
 public partial class MainForm : Form
 {
     private readonly AuthService _authService;
+    
+    // Layout panels
+    private Panel panelSidebar = null!;
+    private Panel panelHeader = null!;
+    private Panel panelContent = null!;
+    private StatusStrip statusStrip = null!;
+    
+    // Status bar labels
+    private ToolStripStatusLabel lblStatus = null!;
+    private ToolStripStatusLabel lblUser = null!;
+    private ToolStripStatusLabel lblTime = null!;
+    
+    // Menu buttons (để quản lý active state)
+    private readonly List<Panel> _menuItems = new();
+    private Panel? _activeMenuItem;
 
     public MainForm()
     {
         InitializeComponent();
         _authService = new AuthService();
         SetupForm();
-        SetupMenu();
+        SetupLayout();
         SetupStatusBar();
     }
 
@@ -23,102 +39,284 @@ public partial class MainForm : Form
     {
         this.Text = $"Quản Lý Người Dùng Oracle - [{AuthService.CurrentSession?.Username}]";
         this.StartPosition = FormStartPosition.CenterScreen;
-        this.Size = new Size(1200, 700);
+        this.Size = new Size(1280, 750);
         this.MinimumSize = new Size(1000, 600);
-        this.BackColor = Color.FromArgb(240, 240, 240);
-
-        // Main Panel để chứa nội dung
-        panelMain = new Panel
-        {
-            Dock = DockStyle.Fill,
-            BackColor = Color.White,
-            Padding = new Padding(10)
-        };
-        this.Controls.Add(panelMain);
+        this.BackColor = AppTheme.ContentBackground;
     }
 
-    private Panel panelMain = null!;
-    private MenuStrip menuStrip = null!;
-    private StatusStrip statusStrip = null!;
-    private ToolStripStatusLabel lblStatus = null!;
-    private ToolStripStatusLabel lblUser = null!;
-    private ToolStripStatusLabel lblTime = null!;
-
-    private void SetupMenu()
+    private void SetupLayout()
     {
-        menuStrip = new MenuStrip
+        // ===== STATUS BAR (phải thêm trước) =====
+        statusStrip = new StatusStrip
         {
-            Font = new Font("Segoe UI", 10),
-            BackColor = Color.FromArgb(0, 102, 204),
-            ForeColor = Color.White
+            BackColor = AppTheme.StatusBarBackground,
+            SizingGrip = false,
+            Dock = DockStyle.Bottom
+        };
+        this.Controls.Add(statusStrip);
+
+        // ===== SIDEBAR =====
+        panelSidebar = new Panel
+        {
+            Dock = DockStyle.Left,
+            Width = AppTheme.SidebarWidth,
+            BackColor = AppTheme.SidebarBackground
+        };
+        
+        SetupSidebar();
+        this.Controls.Add(panelSidebar);
+
+        // ===== HEADER =====
+        panelHeader = new Panel
+        {
+            Dock = DockStyle.Top,
+            Height = AppTheme.HeaderHeight,
+            BackColor = AppTheme.HeaderBackground,
+            Padding = new Padding(15, 0, 15, 0)
+        };
+        
+        SetupHeader();
+        this.Controls.Add(panelHeader);
+
+        // ===== CONTENT AREA =====
+        panelContent = new Panel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = AppTheme.ContentBackground,
+            Padding = new Padding(15)
+        };
+        this.Controls.Add(panelContent);
+
+        // Đảm bảo thứ tự Z-order đúng
+        panelContent.BringToFront();
+    }
+
+    private void SetupSidebar()
+    {
+        int yPos = 0;
+
+        // ===== LOGO/TITLE SECTION =====
+        var panelLogo = new Panel
+        {
+            Dock = DockStyle.Top,
+            Height = 80,
+            BackColor = Color.FromArgb(34, 49, 63) // Darker
         };
 
-        // === Menu Hệ thống ===
-        var menuSystem = new ToolStripMenuItem("📁 Hệ thống");
-        menuSystem.DropDownItems.Add("🔑 Đổi mật khẩu", null, (s, e) => ShowChangePassword());
-        menuSystem.DropDownItems.Add(new ToolStripSeparator());
-        menuSystem.DropDownItems.Add("🚪 Đăng xuất", null, (s, e) => Logout());
-        menuSystem.DropDownItems.Add("❌ Thoát", null, (s, e) => Application.Exit());
-        menuStrip.Items.Add(menuSystem);
-
-        // === Menu Quản lý User ===
-        var menuUser = new ToolStripMenuItem("👥 Quản lý User");
-        menuUser.DropDownItems.Add("📋 Danh sách User", null, (s, e) => ShowUserList());
-        menuUser.DropDownItems.Add("➕ Thêm User mới", null, (s, e) => ShowAddUser());
-        menuStrip.Items.Add(menuUser);
-
-        // === Menu Quản lý Role ===
-        var menuRole = new ToolStripMenuItem("🎭 Quản lý Role");
-        menuRole.DropDownItems.Add("📋 Danh sách Role", null, (s, e) => ShowRoleList());
-        menuRole.DropDownItems.Add("➕ Thêm Role mới", null, (s, e) => ShowAddRole());
-        menuStrip.Items.Add(menuRole);
-
-        // === Menu Quản lý Profile ===
-        var menuProfile = new ToolStripMenuItem("📊 Quản lý Profile");
-        menuProfile.DropDownItems.Add("📋 Danh sách Profile", null, (s, e) => ShowProfileList());
-        menuProfile.DropDownItems.Add("➕ Thêm Profile mới", null, (s, e) => ShowAddProfile());
-        menuStrip.Items.Add(menuProfile);
-
-        // === Menu Quản lý Quyền ===
-        var menuPrivilege = new ToolStripMenuItem("🔑 Quản lý Quyền");
-        menuPrivilege.DropDownItems.Add("📋 System Privileges", null, (s, e) => ShowSystemPrivileges());
-        menuPrivilege.DropDownItems.Add("📋 Object Privileges", null, (s, e) => ShowObjectPrivileges());
-        menuPrivilege.DropDownItems.Add(new ToolStripSeparator());
-        menuPrivilege.DropDownItems.Add("➕ Grant Quyền", null, (s, e) => ShowGrantPrivilege());
-        menuStrip.Items.Add(menuPrivilege);
-
-        // === Menu Báo cáo ===
-        var menuReport = new ToolStripMenuItem("📈 Báo cáo");
-        menuReport.DropDownItems.Add("📊 Thông tin User đầy đủ", null, (s, e) => ShowUserReport());
-        menuStrip.Items.Add(menuReport);
-
-        // === Menu Thông tin bổ sung ===
-        var menuInfo = new ToolStripMenuItem("📝 Thông tin bổ sung");
-        menuInfo.DropDownItems.Add("📋 Danh sách thông tin cá nhân", null, (s, e) => ShowUserInfoList());
-        menuStrip.Items.Add(menuInfo);
-
-        // Style menu items
-        foreach (ToolStripMenuItem item in menuStrip.Items)
+        var lblLogo = new Label
         {
-            item.ForeColor = Color.White;
+            Text = "🗄️ UserManager",
+            Font = new Font("Segoe UI", 14, FontStyle.Bold),
+            ForeColor = AppTheme.SidebarText,
+            AutoSize = false,
+            TextAlign = ContentAlignment.MiddleCenter,
+            Dock = DockStyle.Fill
+        };
+        panelLogo.Controls.Add(lblLogo);
+        panelSidebar.Controls.Add(panelLogo);
+
+        // ===== USER INFO =====
+        var panelUserInfo = new Panel
+        {
+            Dock = DockStyle.Top,
+            Height = 60,
+            BackColor = AppTheme.SidebarBackground,
+            Padding = new Padding(15, 10, 15, 10)
+        };
+
+        var lblCurrentUser = new Label
+        {
+            Text = $"👤 {AuthService.CurrentSession?.Username ?? "User"}",
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.SidebarText,
+            AutoSize = false,
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+        panelUserInfo.Controls.Add(lblCurrentUser);
+        panelSidebar.Controls.Add(panelUserInfo);
+
+        // ===== SEPARATOR =====
+        var separator1 = new Panel
+        {
+            Dock = DockStyle.Top,
+            Height = 1,
+            BackColor = AppTheme.SidebarHover
+        };
+        panelSidebar.Controls.Add(separator1);
+
+        // ===== MENU CONTAINER =====
+        var panelMenu = new Panel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = AppTheme.SidebarBackground,
+            AutoScroll = true
+        };
+
+        // Menu items
+        yPos = 10;
+        
+        // Chỉ hiển thị menu đầy đủ cho Admin
+        if (AuthService.IsAdmin)
+        {
+            yPos = AddMenuItem(panelMenu, "👥", "Quản lý User", ShowUserList, yPos);
+            yPos = AddMenuItem(panelMenu, "🎭", "Quản lý Role", ShowRoleList, yPos);
+            yPos = AddMenuItem(panelMenu, "📊", "Quản lý Profile", ShowProfileList, yPos);
+            yPos = AddMenuItem(panelMenu, "🔑", "Quyền hệ thống", ShowSystemPrivileges, yPos);
+            yPos = AddMenuItem(panelMenu, "📦", "Quyền đối tượng", ShowObjectPrivileges, yPos);
+            yPos = AddMenuItem(panelMenu, "➕", "Cấp quyền", ShowGrantPrivilege, yPos);
+            yPos = AddMenuItem(panelMenu, "📈", "Báo cáo", ShowUserReport, yPos);
+        }
+        
+        yPos = AddMenuItem(panelMenu, "📝", "Thông tin cá nhân", ShowUserInfoList, yPos);
+        
+        // Separator
+        yPos += 10;
+        var menuSeparator = new Panel
+        {
+            Location = new Point(15, yPos),
+            Size = new Size(AppTheme.SidebarWidth - 30, 1),
+            BackColor = AppTheme.SidebarHover
+        };
+        panelMenu.Controls.Add(menuSeparator);
+        yPos += 15;
+
+        // System menu items
+        yPos = AddMenuItem(panelMenu, "🔐", "Đổi mật khẩu", ShowChangePassword, yPos);
+        yPos = AddMenuItem(panelMenu, "🚪", "Đăng xuất", Logout, yPos);
+
+        panelSidebar.Controls.Add(panelMenu);
+
+        // Đảm bảo thứ tự đúng (từ trên xuống)
+        panelMenu.BringToFront();
+        separator1.BringToFront();
+        panelUserInfo.BringToFront();
+        panelLogo.BringToFront();
+    }
+
+    private int AddMenuItem(Panel container, string icon, string text, Action onClick, int yPos)
+    {
+        var panel = new Panel
+        {
+            Location = new Point(0, yPos),
+            Size = new Size(AppTheme.SidebarWidth, AppTheme.MenuItemHeight),
+            BackColor = AppTheme.SidebarBackground,
+            Cursor = Cursors.Hand
+        };
+
+        var lblIcon = new Label
+        {
+            Text = icon,
+            Font = new Font("Segoe UI", 12),
+            ForeColor = AppTheme.SidebarText,
+            Location = new Point(15, 0),
+            Size = new Size(30, AppTheme.MenuItemHeight),
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+
+        var lblText = new Label
+        {
+            Text = text,
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.SidebarText,
+            Location = new Point(50, 0),
+            Size = new Size(AppTheme.SidebarWidth - 60, AppTheme.MenuItemHeight),
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+
+        // Hover effects
+        void OnHover(object? s, EventArgs e)
+        {
+            if (panel != _activeMenuItem)
+                panel.BackColor = AppTheme.SidebarHover;
         }
 
-        this.MainMenuStrip = menuStrip;
-        this.Controls.Add(menuStrip);
+        void OnLeave(object? s, EventArgs e)
+        {
+            if (panel != _activeMenuItem)
+                panel.BackColor = AppTheme.SidebarBackground;
+        }
+
+        void OnClick(object? s, EventArgs e)
+        {
+            SetActiveMenuItem(panel);
+            onClick();
+        }
+
+        panel.MouseEnter += OnHover;
+        panel.MouseLeave += OnLeave;
+        panel.Click += OnClick;
+        
+        lblIcon.MouseEnter += OnHover;
+        lblIcon.MouseLeave += OnLeave;
+        lblIcon.Click += OnClick;
+        
+        lblText.MouseEnter += OnHover;
+        lblText.MouseLeave += OnLeave;
+        lblText.Click += OnClick;
+
+        panel.Controls.Add(lblIcon);
+        panel.Controls.Add(lblText);
+        container.Controls.Add(panel);
+        
+        _menuItems.Add(panel);
+
+        return yPos + AppTheme.MenuItemHeight;
+    }
+
+    private void SetActiveMenuItem(Panel? menuItem)
+    {
+        // Reset previous active
+        if (_activeMenuItem != null)
+        {
+            _activeMenuItem.BackColor = AppTheme.SidebarBackground;
+        }
+
+        // Set new active
+        _activeMenuItem = menuItem;
+        if (_activeMenuItem != null)
+        {
+            _activeMenuItem.BackColor = AppTheme.SidebarActive;
+        }
+    }
+
+    private void SetupHeader()
+    {
+        // Title in header
+        var lblTitle = new Label
+        {
+            Text = "Hệ thống Quản lý Người dùng Oracle",
+            Font = AppTheme.FontTitle,
+            ForeColor = AppTheme.HeaderText,
+            AutoSize = true,
+            Location = new Point(10, 15)
+        };
+        panelHeader.Controls.Add(lblTitle);
+
+        // Time label on the right
+        var lblHeaderTime = new Label
+        {
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.HeaderText,
+            AutoSize = true,
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
+        };
+        lblHeaderTime.Location = new Point(panelHeader.Width - 150, 15);
+        panelHeader.Controls.Add(lblHeaderTime);
+
+        // Timer to update time
+        var timer = new System.Windows.Forms.Timer { Interval = 1000 };
+        timer.Tick += (s, e) => lblHeaderTime.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+        timer.Start();
+        lblHeaderTime.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
     }
 
     private void SetupStatusBar()
     {
-        statusStrip = new StatusStrip
-        {
-            BackColor = Color.FromArgb(45, 45, 48),
-            SizingGrip = false
-        };
-
         lblStatus = new ToolStripStatusLabel
         {
             Text = "Sẵn sàng",
-            ForeColor = Color.LightGreen,
+            ForeColor = AppTheme.StatusBarSuccess,
             Spring = true,
             TextAlign = ContentAlignment.MiddleLeft
         };
@@ -126,17 +324,16 @@ public partial class MainForm : Form
         lblUser = new ToolStripStatusLabel
         {
             Text = $"👤 {AuthService.CurrentSession?.Username ?? "Unknown"}",
-            ForeColor = Color.White
+            ForeColor = AppTheme.StatusBarText
         };
 
         lblTime = new ToolStripStatusLabel
         {
             Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
-            ForeColor = Color.White
+            ForeColor = AppTheme.StatusBarText
         };
 
         statusStrip.Items.AddRange(new ToolStripItem[] { lblStatus, lblUser, lblTime });
-        this.Controls.Add(statusStrip);
 
         // Timer update time
         var timer = new System.Windows.Forms.Timer { Interval = 1000 };
@@ -147,16 +344,16 @@ public partial class MainForm : Form
     private void SetStatus(string message, bool isError = false)
     {
         lblStatus.Text = message;
-        lblStatus.ForeColor = isError ? Color.Red : Color.LightGreen;
+        lblStatus.ForeColor = isError ? AppTheme.DangerButton : AppTheme.StatusBarSuccess;
     }
 
     #region Navigation Methods
 
     private void LoadControl(UserControl control)
     {
-        panelMain.Controls.Clear();
+        panelContent.Controls.Clear();
         control.Dock = DockStyle.Fill;
-        panelMain.Controls.Add(control);
+        panelContent.Controls.Add(control);
     }
 
     private void ShowUserList()
@@ -220,7 +417,6 @@ public partial class MainForm : Form
     {
         using var form = new GrantPrivilegeForm();
         form.ShowDialog();
-        // Có thể refresh privilege list nếu cần
     }
 
     private void ShowUserReport()
@@ -229,11 +425,10 @@ public partial class MainForm : Form
         SetStatus("Đang xem báo cáo User");
     }
 
-
     private void ShowUserInfoList()
     {
         LoadControl(new UserInfoListControl());
-        SetStatus("Đang xem thông tin cá nhân bổ sung");
+        SetStatus("Đang xem thông tin cá nhân");
     }
 
     private void ShowChangePassword()
@@ -259,14 +454,20 @@ public partial class MainForm : Form
     {
         base.OnLoad(e);
         
-        // Load User List by default
+        // Set first menu item as active and load default view
         if (AuthService.IsAdmin)
         {
+            if (_menuItems.Count > 0)
+                SetActiveMenuItem(_menuItems[0]);
             ShowUserList();
         }
         else
         {
             // User thường chỉ xem được thông tin của mình
+            var userInfoIndex = _menuItems.FindIndex(p => 
+                p.Controls.OfType<Label>().Any(l => l.Text.Contains("Thông tin")));
+            if (userInfoIndex >= 0)
+                SetActiveMenuItem(_menuItems[userInfoIndex]);
             ShowUserInfoList();
         }
     }

@@ -1,5 +1,6 @@
 using UserManager.BLL.Services;
 using UserManager.Common.Helpers;
+using UserManager.GUI.Core;
 using System.Data;
 
 namespace UserManager.GUI.UserControls;
@@ -23,7 +24,7 @@ public partial class PrivilegeListControl : UserControl
 
     private void SetupUI()
     {
-        this.BackColor = Color.White;
+        this.BackColor = AppTheme.CardBackground;
         this.Padding = new Padding(10);
 
         // Header Panel
@@ -31,15 +32,15 @@ public partial class PrivilegeListControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 60,
-            BackColor = Color.White
+            BackColor = AppTheme.CardBackground
         };
 
         // Title
         var lblTitle = new Label
         {
             Text = "🔑 DANH SÁCH SYSTEM PRIVILEGES",
-            Font = new Font("Segoe UI", 16, FontStyle.Bold),
-            ForeColor = Color.FromArgb(0, 102, 204),
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
             AutoSize = true,
             Location = new Point(10, 15)
         };
@@ -50,14 +51,14 @@ public partial class PrivilegeListControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 50,
-            BackColor = Color.FromArgb(248, 248, 248)
+            BackColor = AppTheme.GridAlternate
         };
 
         // Search TextBox
         txtSearch = new TextBox
         {
             PlaceholderText = "🔍 Tìm kiếm privilege hoặc grantee...",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(10, 10),
             Size = new Size(250, 30)
         };
@@ -68,11 +69,11 @@ public partial class PrivilegeListControl : UserControl
         var btnGrant = new Button
         {
             Text = "➕ Grant",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(280, 8),
             Size = new Size(90, 32),
-            BackColor = Color.FromArgb(40, 167, 69),
-            ForeColor = Color.White,
+            BackColor = AppTheme.SuccessButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -84,11 +85,11 @@ public partial class PrivilegeListControl : UserControl
         var btnRefresh = new Button
         {
             Text = "🔄 Làm mới",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(380, 8),
             Size = new Size(100, 32),
-            BackColor = Color.FromArgb(0, 123, 255),
-            ForeColor = Color.White,
+            BackColor = AppTheme.PrimaryButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -100,7 +101,7 @@ public partial class PrivilegeListControl : UserControl
         dgvPrivileges = new DataGridView
         {
             Dock = DockStyle.Fill,
-            BackgroundColor = Color.White,
+            BackgroundColor = AppTheme.CardBackground,
             BorderStyle = BorderStyle.None,
             CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
@@ -113,16 +114,16 @@ public partial class PrivilegeListControl : UserControl
             AllowUserToDeleteRows = false,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             RowHeadersVisible = false,
-            Font = new Font("Segoe UI", 10)
+            Font = AppTheme.FontRegular
         };
 
         // Header style
-        dgvPrivileges.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 102, 204);
-        dgvPrivileges.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-        dgvPrivileges.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+        dgvPrivileges.ColumnHeadersDefaultCellStyle.BackColor = AppTheme.GridHeader;
+        dgvPrivileges.ColumnHeadersDefaultCellStyle.ForeColor = AppTheme.GridHeaderText;
+        dgvPrivileges.ColumnHeadersDefaultCellStyle.Font = AppTheme.FontBold;
         dgvPrivileges.ColumnHeadersHeight = 40;
         dgvPrivileges.RowTemplate.Height = 35;
-        dgvPrivileges.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 248, 248);
+        dgvPrivileges.AlternatingRowsDefaultCellStyle.BackColor = AppTheme.GridAlternate;
 
         // Context Menu
         var contextMenu = new ContextMenuStrip();

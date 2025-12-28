@@ -1,10 +1,17 @@
+using UserManager.GUI.Core;
+
 namespace UserManager.GUI.Forms;
 
 /// <summary>
-/// Form Đăng nhập
+/// Form Đăng nhập với theme mới
 /// </summary>
 public partial class LoginForm : Form
 {
+    private TextBox txtUsername = null!;
+    private TextBox txtPassword = null!;
+    private Button btnLogin = null!;
+    private Button btnCancel = null!;
+
     public LoginForm()
     {
         InitializeComponent();
@@ -19,91 +26,149 @@ public partial class LoginForm : Form
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.Size = new Size(400, 280);
-        this.BackColor = Color.White;
+        this.Size = new Size(450, 350);
+        this.BackColor = AppTheme.CardBackground;
+
+        // Left Panel (branding)
+        var panelLeft = new Panel
+        {
+            Dock = DockStyle.Left,
+            Width = 150,
+            BackColor = AppTheme.SidebarBackground
+        };
+
+        var lblBrand = new Label
+        {
+            Text = "🗄️",
+            Font = new Font("Segoe UI", 48),
+            ForeColor = AppTheme.SidebarText,
+            AutoSize = false,
+            TextAlign = ContentAlignment.MiddleCenter,
+            Dock = DockStyle.Fill
+        };
+        panelLeft.Controls.Add(lblBrand);
+        
+        var lblBrandText = new Label
+        {
+            Text = "User\nManager",
+            Font = new Font("Segoe UI", 12, FontStyle.Bold),
+            ForeColor = AppTheme.SidebarText,
+            AutoSize = false,
+            TextAlign = ContentAlignment.TopCenter,
+            Dock = DockStyle.Bottom,
+            Height = 50
+        };
+        panelLeft.Controls.Add(lblBrandText);
+        
+        this.Controls.Add(panelLeft);
+
+        // Right Panel (login form)
+        var panelRight = new Panel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = AppTheme.CardBackground,
+            Padding = new Padding(20)
+        };
 
         // Title Label
         var lblTitle = new Label
         {
-            Text = "🔐 ĐĂNG NHẬP HỆ THỐNG",
-            Font = new Font("Segoe UI", 16, FontStyle.Bold),
-            ForeColor = Color.FromArgb(0, 102, 204),
+            Text = "Đăng Nhập",
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
             AutoSize = true,
-            Location = new Point(70, 20)
+            Location = new Point(20, 30)
         };
-        this.Controls.Add(lblTitle);
+        panelRight.Controls.Add(lblTitle);
+
+        // Subtitle
+        var lblSubtitle = new Label
+        {
+            Text = "Vui lòng nhập thông tin đăng nhập Oracle",
+            Font = AppTheme.FontSmall,
+            ForeColor = AppTheme.TextSecondary,
+            AutoSize = true,
+            Location = new Point(20, 60)
+        };
+        panelRight.Controls.Add(lblSubtitle);
 
         // Username Label
         var lblUsername = new Label
         {
-            Text = "Tên đăng nhập:",
-            Font = new Font("Segoe UI", 10),
-            Location = new Point(50, 70),
+            Text = "Tên đăng nhập",
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
+            Location = new Point(20, 100),
             AutoSize = true
         };
-        this.Controls.Add(lblUsername);
+        panelRight.Controls.Add(lblUsername);
 
         // Username TextBox
         txtUsername = new TextBox
         {
             Font = new Font("Segoe UI", 11),
-            Location = new Point(50, 95),
-            Size = new Size(280, 30),
+            Location = new Point(20, 125),
+            Size = new Size(240, 30),
             PlaceholderText = "Nhập username Oracle..."
         };
-        this.Controls.Add(txtUsername);
+        panelRight.Controls.Add(txtUsername);
 
         // Password Label
         var lblPassword = new Label
         {
-            Text = "Mật khẩu:",
-            Font = new Font("Segoe UI", 10),
-            Location = new Point(50, 130),
+            Text = "Mật khẩu",
+            Font = AppTheme.FontRegular,
+            ForeColor = AppTheme.TextPrimary,
+            Location = new Point(20, 165),
             AutoSize = true
         };
-        this.Controls.Add(lblPassword);
+        panelRight.Controls.Add(lblPassword);
 
         // Password TextBox
         txtPassword = new TextBox
         {
             Font = new Font("Segoe UI", 11),
-            Location = new Point(50, 155),
-            Size = new Size(280, 30),
+            Location = new Point(20, 190),
+            Size = new Size(240, 30),
             PasswordChar = '●',
             PlaceholderText = "Nhập mật khẩu..."
         };
-        this.Controls.Add(txtPassword);
+        panelRight.Controls.Add(txtPassword);
 
         // Login Button
         btnLogin = new Button
         {
             Text = "Đăng Nhập",
-            Font = new Font("Segoe UI", 11, FontStyle.Bold),
-            Location = new Point(50, 200),
-            Size = new Size(135, 35),
-            BackColor = Color.FromArgb(0, 102, 204),
-            ForeColor = Color.White,
+            Font = AppTheme.FontBold,
+            Location = new Point(20, 240),
+            Size = new Size(115, 38),
+            BackColor = AppTheme.PrimaryButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
         btnLogin.FlatAppearance.BorderSize = 0;
         btnLogin.Click += BtnLogin_Click;
-        this.Controls.Add(btnLogin);
+        panelRight.Controls.Add(btnLogin);
 
         // Cancel Button
         btnCancel = new Button
         {
             Text = "Thoát",
-            Font = new Font("Segoe UI", 11),
-            Location = new Point(195, 200),
-            Size = new Size(135, 35),
-            BackColor = Color.FromArgb(220, 220, 220),
+            Font = AppTheme.FontRegular,
+            Location = new Point(145, 240),
+            Size = new Size(115, 38),
+            BackColor = AppTheme.ContentBackground,
+            ForeColor = AppTheme.TextPrimary,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
-        btnCancel.FlatAppearance.BorderSize = 0;
+        btnCancel.FlatAppearance.BorderSize = 1;
+        btnCancel.FlatAppearance.BorderColor = AppTheme.CardBorder;
         btnCancel.Click += (s, e) => Application.Exit();
-        this.Controls.Add(btnCancel);
+        panelRight.Controls.Add(btnCancel);
+
+        this.Controls.Add(panelRight);
 
         // Accept button
         this.AcceptButton = btnLogin;
@@ -111,11 +176,6 @@ public partial class LoginForm : Form
         // Focus username
         this.Load += (s, e) => txtUsername.Focus();
     }
-
-    private TextBox txtUsername = null!;
-    private TextBox txtPassword = null!;
-    private Button btnLogin = null!;
-    private Button btnCancel = null!;
 
     private void BtnLogin_Click(object? sender, EventArgs e)
     {

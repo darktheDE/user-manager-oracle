@@ -1,5 +1,6 @@
 using UserManager.BLL.Services;
 using UserManager.Common.Helpers;
+using UserManager.GUI.Core;
 using System.Data;
 
 namespace UserManager.GUI.UserControls;
@@ -22,7 +23,7 @@ public partial class ProfileListControl : UserControl
 
     private void SetupUI()
     {
-        this.BackColor = Color.White;
+        this.BackColor = AppTheme.CardBackground;
         this.Padding = new Padding(10);
 
         // Header Panel
@@ -30,15 +31,15 @@ public partial class ProfileListControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 60,
-            BackColor = Color.White
+            BackColor = AppTheme.CardBackground
         };
 
         // Title
         var lblTitle = new Label
         {
             Text = "📊 DANH SÁCH PROFILE",
-            Font = new Font("Segoe UI", 16, FontStyle.Bold),
-            ForeColor = Color.FromArgb(0, 102, 204),
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
             AutoSize = true,
             Location = new Point(10, 15)
         };
@@ -49,18 +50,18 @@ public partial class ProfileListControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 50,
-            BackColor = Color.FromArgb(248, 248, 248)
+            BackColor = AppTheme.GridAlternate
         };
 
         // Add Button
         var btnAdd = new Button
         {
             Text = "➕ Thêm mới",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(10, 8),
             Size = new Size(100, 32),
-            BackColor = Color.FromArgb(40, 167, 69),
-            ForeColor = Color.White,
+            BackColor = AppTheme.SuccessButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -72,11 +73,11 @@ public partial class ProfileListControl : UserControl
         var btnRefresh = new Button
         {
             Text = "🔄 Làm mới",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(120, 8),
             Size = new Size(100, 32),
-            BackColor = Color.FromArgb(0, 123, 255),
-            ForeColor = Color.White,
+            BackColor = AppTheme.PrimaryButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -88,7 +89,7 @@ public partial class ProfileListControl : UserControl
         dgvProfiles = new DataGridView
         {
             Dock = DockStyle.Fill,
-            BackgroundColor = Color.White,
+            BackgroundColor = AppTheme.CardBackground,
             BorderStyle = BorderStyle.None,
             CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
@@ -101,16 +102,16 @@ public partial class ProfileListControl : UserControl
             AllowUserToDeleteRows = false,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             RowHeadersVisible = false,
-            Font = new Font("Segoe UI", 10)
+            Font = AppTheme.FontRegular
         };
 
         // Header style
-        dgvProfiles.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 102, 204);
-        dgvProfiles.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-        dgvProfiles.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+        dgvProfiles.ColumnHeadersDefaultCellStyle.BackColor = AppTheme.GridHeader;
+        dgvProfiles.ColumnHeadersDefaultCellStyle.ForeColor = AppTheme.GridHeaderText;
+        dgvProfiles.ColumnHeadersDefaultCellStyle.Font = AppTheme.FontBold;
         dgvProfiles.ColumnHeadersHeight = 40;
         dgvProfiles.RowTemplate.Height = 35;
-        dgvProfiles.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 248, 248);
+        dgvProfiles.AlternatingRowsDefaultCellStyle.BackColor = AppTheme.GridAlternate;
 
         // Context Menu
         var contextMenu = new ContextMenuStrip();

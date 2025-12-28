@@ -1,6 +1,7 @@
 using UserManager.BLL.Services;
 using UserManager.DAL.Repositories;
 using UserManager.Common.Helpers;
+using UserManager.GUI.Core;
 using System.Data;
 
 namespace UserManager.GUI.UserControls;
@@ -24,7 +25,7 @@ public partial class UserInfoListControl : UserControl
 
     private void SetupUI()
     {
-        this.BackColor = Color.White;
+        this.BackColor = AppTheme.CardBackground;
         this.Padding = new Padding(10);
 
         // Header Panel
@@ -32,15 +33,15 @@ public partial class UserInfoListControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 60,
-            BackColor = Color.White
+            BackColor = AppTheme.CardBackground
         };
 
         // Title
         var lblTitle = new Label
         {
             Text = "📝 THÔNG TIN CÁ NHÂN BỔ SUNG",
-            Font = new Font("Segoe UI", 16, FontStyle.Bold),
-            ForeColor = Color.FromArgb(0, 102, 204),
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
             AutoSize = true,
             Location = new Point(10, 15)
         };
@@ -51,14 +52,14 @@ public partial class UserInfoListControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 50,
-            BackColor = Color.FromArgb(248, 248, 248)
+            BackColor = AppTheme.GridAlternate
         };
 
         // Search TextBox
         txtSearch = new TextBox
         {
             PlaceholderText = "🔍 Tìm kiếm theo tên hoặc username...",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(10, 10),
             Size = new Size(250, 30)
         };
@@ -69,11 +70,11 @@ public partial class UserInfoListControl : UserControl
         var btnAdd = new Button
         {
             Text = "➕ Thêm mới",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(280, 8),
             Size = new Size(100, 32),
-            BackColor = Color.FromArgb(40, 167, 69),
-            ForeColor = Color.White,
+            BackColor = AppTheme.SuccessButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -85,11 +86,11 @@ public partial class UserInfoListControl : UserControl
         var btnRefresh = new Button
         {
             Text = "🔄 Làm mới",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(390, 8),
             Size = new Size(100, 32),
-            BackColor = Color.FromArgb(0, 123, 255),
-            ForeColor = Color.White,
+            BackColor = AppTheme.PrimaryButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -101,7 +102,7 @@ public partial class UserInfoListControl : UserControl
         dgvUserInfo = new DataGridView
         {
             Dock = DockStyle.Fill,
-            BackgroundColor = Color.White,
+            BackgroundColor = AppTheme.CardBackground,
             BorderStyle = BorderStyle.None,
             CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
@@ -114,16 +115,16 @@ public partial class UserInfoListControl : UserControl
             AllowUserToDeleteRows = false,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             RowHeadersVisible = false,
-            Font = new Font("Segoe UI", 10)
+            Font = AppTheme.FontRegular
         };
 
         // Header style
-        dgvUserInfo.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 102, 204);
-        dgvUserInfo.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-        dgvUserInfo.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+        dgvUserInfo.ColumnHeadersDefaultCellStyle.BackColor = AppTheme.GridHeader;
+        dgvUserInfo.ColumnHeadersDefaultCellStyle.ForeColor = AppTheme.GridHeaderText;
+        dgvUserInfo.ColumnHeadersDefaultCellStyle.Font = AppTheme.FontBold;
         dgvUserInfo.ColumnHeadersHeight = 40;
         dgvUserInfo.RowTemplate.Height = 35;
-        dgvUserInfo.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 248, 248);
+        dgvUserInfo.AlternatingRowsDefaultCellStyle.BackColor = AppTheme.GridAlternate;
 
         // Context Menu
         var contextMenu = new ContextMenuStrip();

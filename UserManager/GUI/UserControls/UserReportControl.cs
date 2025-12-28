@@ -1,5 +1,6 @@
 using UserManager.BLL.Services;
 using UserManager.Common.Helpers;
+using UserManager.GUI.Core;
 using System.Data;
 
 namespace UserManager.GUI.UserControls;
@@ -29,7 +30,7 @@ public partial class UserReportControl : UserControl
 
     private void SetupUI()
     {
-        this.BackColor = Color.White;
+        this.BackColor = AppTheme.CardBackground;
         this.Padding = new Padding(10);
 
         // Header Panel
@@ -37,15 +38,15 @@ public partial class UserReportControl : UserControl
         {
             Dock = DockStyle.Top,
             Height = 80,
-            BackColor = Color.White
+            BackColor = AppTheme.CardBackground
         };
 
         // Title
         var lblTitle = new Label
         {
             Text = "📊 BÁO CÁO THÔNG TIN USER ĐẦY ĐỦ",
-            Font = new Font("Segoe UI", 16, FontStyle.Bold),
-            ForeColor = Color.FromArgb(0, 102, 204),
+            Font = AppTheme.FontLarge,
+            ForeColor = AppTheme.TextTitle,
             AutoSize = true,
             Location = new Point(10, 10)
         };
@@ -55,7 +56,7 @@ public partial class UserReportControl : UserControl
         var lblUser = new Label
         {
             Text = "Chọn User:",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(10, 50),
             AutoSize = true
         };
@@ -63,7 +64,7 @@ public partial class UserReportControl : UserControl
 
         cboUsers = new ComboBox
         {
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(90, 47),
             Width = 200,
             DropDownStyle = ComboBoxStyle.DropDownList
@@ -74,11 +75,11 @@ public partial class UserReportControl : UserControl
         var btnRefresh = new Button
         {
             Text = "🔄 Làm mới",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(310, 45),
             Size = new Size(100, 30),
-            BackColor = Color.FromArgb(0, 123, 255),
-            ForeColor = Color.White,
+            BackColor = AppTheme.PrimaryButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -89,11 +90,11 @@ public partial class UserReportControl : UserControl
         var btnExport = new Button
         {
             Text = "📄 Xuất",
-            Font = new Font("Segoe UI", 10),
+            Font = AppTheme.FontRegular,
             Location = new Point(420, 45),
             Size = new Size(80, 30),
-            BackColor = Color.FromArgb(40, 167, 69),
-            ForeColor = Color.White,
+            BackColor = AppTheme.SuccessButton,
+            ForeColor = AppTheme.ButtonText,
             FlatStyle = FlatStyle.Flat,
             Cursor = Cursors.Hand
         };
@@ -105,7 +106,7 @@ public partial class UserReportControl : UserControl
         var tabControl = new TabControl
         {
             Dock = DockStyle.Fill,
-            Font = new Font("Segoe UI", 10)
+            Font = AppTheme.FontRegular
         };
 
         // Tab 1: Thông tin cơ bản
@@ -142,7 +143,7 @@ public partial class UserReportControl : UserControl
         var dgv = new DataGridView
         {
             Dock = DockStyle.Fill,
-            BackgroundColor = Color.White,
+            BackgroundColor = AppTheme.CardBackground,
             BorderStyle = BorderStyle.None,
             CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
@@ -155,15 +156,15 @@ public partial class UserReportControl : UserControl
             AllowUserToDeleteRows = false,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             RowHeadersVisible = false,
-            Font = new Font("Segoe UI", 10)
+            Font = AppTheme.FontRegular
         };
 
-        dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 102, 204);
-        dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-        dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+        dgv.ColumnHeadersDefaultCellStyle.BackColor = AppTheme.GridHeader;
+        dgv.ColumnHeadersDefaultCellStyle.ForeColor = AppTheme.GridHeaderText;
+        dgv.ColumnHeadersDefaultCellStyle.Font = AppTheme.FontBold;
         dgv.ColumnHeadersHeight = 35;
         dgv.RowTemplate.Height = 30;
-        dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 248, 248);
+        dgv.AlternatingRowsDefaultCellStyle.BackColor = AppTheme.GridAlternate;
 
         return dgv;
     }
